@@ -3,47 +3,131 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>WiFi Local - Escanea el QR</title>
+    <title>WiFi Premium | Acceso por QR</title>
     <style>
-        body { font-family: sans-serif; text-align: center; padding-top: 50px; background: #f4f4f4; }
-        .box { background: white; padding: 20px; border-radius: 15px; display: inline-block; box-shadow: 0 4px 6px rgba(0,0,0,0.1); }
+        :root {
+            --primary: #007bff;
+            --dark: #1a1a1a;
+            --gray: #666;
+        }
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body { 
+            font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; 
+            background: #f0f2f5; 
+            display: flex; 
+            justify-content: center; 
+            align-items: center; 
+            height: 100vh;
+            color: var(--dark);
+        }
+        .container {
+            background: white;
+            width: 90%;
+            max-width: 400px;
+            padding: 30px;
+            border-radius: 20px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+            text-align: center;
+        }
+        .logo {
+            font-size: 24px;
+            font-weight: bold;
+            color: var(--primary);
+            margin-bottom: 20px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 10px;
+        }
+        .qr-placeholder {
+            width: 150px;
+            height: 150px;
+            margin: 20px auto;
+            border: 3px solid var(--primary);
+            border-radius: 15px;
+            position: relative;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background: #f8f9fa;
+        }
+        .scan-line {
+            position: absolute;
+            width: 100%;
+            height: 2px;
+            background: var(--primary);
+            top: 0;
+            left: 0;
+            animation: scan 2s infinite linear;
+            box-shadow: 0 0 8px var(--primary);
+        }
+        @keyframes scan {
+            0% { top: 0%; }
+            100% { top: 100%; }
+        }
+        h1 { font-size: 20px; margin-bottom: 10px; }
+        p { color: var(--gray); font-size: 14px; line-height: 1.5; }
+        .footer { margin-top: 30px; font-size: 12px; color: #aaa; }
+        .loading-dots:after { content: '.'; animation: dots 1.5s steps(5, end) infinite; }
+        @keyframes dots { 0%, 20% { content: '.'; } 40% { content: '..'; } 60% { content: '...'; } }
     </style>
 </head>
 <body>
-    <div class="box">
-        <h2 id="msg">Conéctate al WiFi</h2>
-        <p id="sub">Escanea el código QR que está en tu mesa para activar el internet.</p>
+
+<div class="container">
+    <div class="logo">
+        <svg width="30" height="30" viewBox="0 0 24 24" fill="currentColor"><path d="M12 21l-12-18h24z"/></svg>
+        WIFI FREE
+    </div>
+    
+    <div id="content">
+        <h1 id="main-title">Paso Final</h1>
+        <p id="description">Escanea el código QR que se encuentra en tu mesa para activar el acceso a internet.</p>
         
-        <form id="portal-form" method="post">
-            <input type="hidden" name="tok" id="tok">
-            <input type="hidden" name="redir" id="redir">
-        </form>
+        <div class="qr-placeholder" id="visual-element">
+            <div class="scan-line"></div>
+            <svg width="80" height="80" viewBox="0 0 24 24" fill="#ddd"><path d="M3 3h6v6H3V3zm12 0h6v6h-6V3zM3 15h6v6H3v-6zm15 0h3v3h-3v-3z"/></svg>
+        </div>
     </div>
 
-    <script>
-        const params = new URLSearchParams(window.location.search);
-        const tok = params.get('grant_token') || params.get('tok');
-        const auth = params.get('authaction') || params.get('base_grant_url');
-        
-        // Guardamos el token en la sesión por si el usuario cierra el navegador al escanear
-        if(tok) sessionStorage.setItem('wifi_tok', tok);
-        if(auth) sessionStorage.setItem('wifi_auth', auth);
+    <div class="footer">
+        Desarrollado para GWN7630LR & MikroTik
+    </div>
+</div>
 
-        // Si la URL tiene ?access=true (viene del QR)
-        if (params.get('access') === 'true') {
-            const savedTok = sessionStorage.getItem('wifi_tok');
-            const savedAuth = sessionStorage.getItem('wifi_auth');
+<script>
+    const params = new URLSearchParams(window.location.search);
+    const grant_url = params.get('base_grant_url');
+    const token = params.get('grant_token');
+
+    // 1. Guardar credenciales del AP
+    if (grant_url && token) {
+        localStorage.setItem('ap_url', grant_url);
+        localStorage.setItem('ap_token', token);
+    }
+
+    // 2. Lógica de validación por QR
+    if (params.get('validar') === 'true') {
+        const savedUrl = localStorage.getItem('ap_url');
+        const savedToken = localStorage.getItem('ap_token');
+
+        if (savedUrl && savedToken) {
+            document.getElementById('main-title').innerText = "Validando";
+            document.getElementById('main-title').className = "loading-dots";
+            document.getElementById('description').innerText = "Conectando con el servidor, espera un momento...";
             
-            if (savedTok && savedAuth) {
-                document.getElementById('msg').innerText = "¡Validando acceso!";
-                const form = document.getElementById('portal-form');
-                form.action = savedAuth;
-                document.getElementById('tok').value = savedTok;
-                form.submit();
-            } else {
-                document.getElementById('msg').innerText = "Error: Token no encontrado. Reintenta conectarte al WiFi.";
-            }
+            // Redirección al Grandstream para liberar internet
+            // Agregamos un pequeño delay para que el usuario vea el estado de carga
+            setTimeout(() => {
+                window.location.href = `${savedUrl}?token=${savedToken}&continue=https://google.com`;
+            }, 1500);
+        } else {
+            document.getElementById('main-title').innerText = "Error de Token";
+            document.getElementById('description').innerText = "Asegúrate de estar conectado al WiFi del local antes de escanear.";
+            document.getElementById('visual-element').style.borderColor = "red";
         }
-    </script>
+    }
+</script>
+
 </body>
 </html>
