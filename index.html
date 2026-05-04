@@ -2,20 +2,16 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes, viewport-fit=cover">
-    <title>WiFi Premium | Autenticación Inteligente</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+    <title>WiFi Premium | Acceso Rápido</title>
     <!-- Html5-QRCode Library -->
     <script src="https://cdn.jsdelivr.net/npm/html5-qrcode@2.3.8/html5-qrcode.min.js"></script>
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
 
         body {
             font-family: 'Segoe UI', 'Roboto', sans-serif;
-            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
             min-height: 100vh;
             display: flex;
             justify-content: center;
@@ -26,16 +22,10 @@
         .card {
             background: rgba(255,255,255,0.98);
             border-radius: 32px;
-            box-shadow: 0 25px 50px -12px rgba(0,0,0,0.4);
-            max-width: 580px;
+            max-width: 550px;
             width: 100%;
             overflow: hidden;
-            animation: fadeIn 0.5s ease;
-        }
-
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(20px); }
-            to { opacity: 1; transform: translateY(0); }
+            box-shadow: 0 25px 50px -12px rgba(0,0,0,0.4);
         }
 
         .header {
@@ -45,106 +35,31 @@
             text-align: center;
         }
 
-        .header h1 {
-            font-size: 24px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 10px;
-        }
+        .header h1 { font-size: 24px; display: flex; align-items: center; justify-content: center; gap: 10px; }
+        .header .badge { background: rgba(255,255,255,0.2); border-radius: 50px; padding: 4px 12px; font-size: 11px; margin-top: 8px; display: inline-block; }
 
-        .header .badge {
-            background: rgba(255,255,255,0.2);
-            border-radius: 50px;
-            padding: 4px 12px;
-            font-size: 11px;
-            margin-top: 8px;
-            display: inline-block;
-        }
+        .content { padding: 24px; }
 
-        .content {
-            padding: 24px;
-        }
-
-        /* Panel de diagnóstico */
-        .diagnostic-panel {
+        /* Panel de estado */
+        .status-panel {
             background: #f8f9fa;
             border-radius: 16px;
             padding: 15px;
             margin-bottom: 20px;
-            border: 1px solid #dee2e6;
+            text-align: center;
         }
-        .diagnostic-panel h4 {
-            font-size: 13px;
-            color: #495057;
-            margin-bottom: 10px;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
-        .diagnostic-item {
-            display: flex;
-            justify-content: space-between;
-            padding: 8px 0;
-            border-bottom: 1px solid #e9ecef;
+        .status-panel h4 { font-size: 14px; margin-bottom: 10px; }
+        .status-badge {
+            display: inline-block;
+            padding: 5px 12px;
+            border-radius: 50px;
             font-size: 12px;
-        }
-        .diagnostic-item:last-child {
-            border-bottom: none;
-        }
-        .diagnostic-label {
             font-weight: bold;
-            color: #6c757d;
         }
-        .diagnostic-value {
-            font-family: monospace;
-            word-break: break-all;
-            text-align: right;
-            max-width: 60%;
-        }
-        .diagnostic-value.success { color: #28a745; }
-        .diagnostic-value.error { color: #dc3545; }
-        .diagnostic-value.warning { color: #ffc107; }
-
-        /* Sistema de Alertas */
-        .alert-system {
-            position: fixed;
-            top: 20px;
-            left: 50%;
-            transform: translateX(-50%);
-            z-index: 10000;
-            width: 90%;
-            max-width: 500px;
-            pointer-events: none;
-        }
-
-        .alert-toast {
-            background: white;
-            border-radius: 16px;
-            padding: 14px 18px;
-            margin-bottom: 12px;
-            box-shadow: 0 10px 25px rgba(0,0,0,0.2);
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            animation: slideIn 0.3s ease;
-            pointer-events: auto;
-        }
-
-        @keyframes slideIn {
-            from { transform: translateX(100px); opacity: 0; }
-            to { transform: translateX(0); opacity: 1; }
-        }
-
-        .alert-toast.success { border-left: 5px solid #28a745; background: #f0fff4; }
-        .alert-toast.error { border-left: 5px solid #dc3545; background: #fff5f5; }
-        .alert-toast.warning { border-left: 5px solid #ffc107; background: #fffbef; }
-        .alert-toast.info { border-left: 5px solid #17a2b8; background: #e8f7f9; }
-
-        .alert-icon { font-size: 24px; }
-        .alert-content { flex: 1; }
-        .alert-title { font-weight: bold; font-size: 14px; }
-        .alert-message { font-size: 12px; color: #555; }
+        .status-badge.success { background: #d4edda; color: #155724; }
+        .status-badge.warning { background: #fff3cd; color: #856404; }
+        .status-badge.error { background: #f8d7da; color: #721c24; }
+        .status-badge.info { background: #d1ecf1; color: #0c5460; }
 
         .scanner-area {
             background: #000;
@@ -153,7 +68,6 @@
             margin: 15px 0;
             min-height: 300px;
         }
-
         #qr-reader { width: 100%; }
         #qr-reader video { width: 100% !important; height: auto !important; }
 
@@ -162,13 +76,12 @@
             gap: 12px;
             margin: 15px 0;
         }
-
         button {
             flex: 1;
-            padding: 12px;
+            padding: 14px;
             border: none;
-            border-radius: 50px;
-            font-weight: 600;
+            border-radius: 60px;
+            font-weight: 700;
             cursor: pointer;
             transition: all 0.2s;
             display: flex;
@@ -176,27 +89,14 @@
             justify-content: center;
             gap: 8px;
         }
-
         .btn-primary { background: #007bff; color: white; }
         .btn-primary:hover:not(:disabled) { background: #0056b3; transform: translateY(-1px); }
         .btn-secondary { background: #6c757d; color: white; }
-        .btn-secondary:hover:not(:disabled) { background: #545b62; }
-        .btn-outline { background: white; color: #007bff; border: 2px solid #007bff; }
-        .btn-outline:hover { background: #007bff; color: white; }
         button:disabled { opacity: 0.5; cursor: not-allowed; }
 
-        .manual-section {
-            margin-top: 20px;
-            padding-top: 15px;
-            border-top: 1px solid #e0e0e0;
-        }
+        .manual-section { margin-top: 20px; padding-top: 15px; border-top: 1px solid #e0e0e0; }
         .manual-toggle { text-align: center; }
-        .manual-toggle a {
-            color: #007bff;
-            text-decoration: none;
-            font-size: 13px;
-            cursor: pointer;
-        }
+        .manual-toggle a { color: #007bff; text-decoration: none; font-size: 13px; cursor: pointer; }
         .manual-form {
             background: #f8f9fa;
             border-radius: 16px;
@@ -212,6 +112,7 @@
             border-radius: 50px;
             margin-bottom: 10px;
         }
+        .manual-form button { width: 100%; }
 
         .footer {
             background: #f8f9fa;
@@ -220,26 +121,44 @@
             font-size: 11px;
             color: #888;
         }
+
+        /* Toast messages */
+        .toast {
+            position: fixed;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: #333;
+            color: white;
+            padding: 10px 20px;
+            border-radius: 50px;
+            font-size: 13px;
+            z-index: 1000;
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+        .toast.show { opacity: 1; }
+        .toast.success { background: #28a745; }
+        .toast.error { background: #dc3545; }
     </style>
 </head>
 <body>
 
-<div class="alert-system" id="alertSystem"></div>
-
 <div class="card">
     <div class="header">
         <h1><span>📶</span> WiFi Premium</h1>
-        <p>Autenticación Segura | GWN7630LR + MikroTik</p>
-        <div class="badge">⚡ Portal Cautivo RADIUS</div>
+        <p>Autenticación por QR | GWN7630LR + MikroTik</p>
+        <div class="badge">⚡ Escanea el código QR de tu mesa</div>
     </div>
 
     <div class="content">
-        <!-- Panel de diagnóstico - MUESTRA EL ESTADO DEL PORTAL -->
-        <div class="diagnostic-panel" id="diagnosticPanel">
-            <h4>🔍 Diagnóstico del Sistema</h4>
-            <div id="diagnosticContent">
-                <!-- Se llena con JavaScript -->
+        <!-- Panel de estado - MUESTRA EN QUÉ SITUACIÓN ESTÁS -->
+        <div class="status-panel" id="statusPanel">
+            <h4>📡 Estado de conexión</h4>
+            <div id="statusDisplay">
+                <span class="status-badge info">🔍 Verificando...</span>
             </div>
+            <p id="statusMessage" style="font-size: 12px; margin-top: 10px; color: #666;">Conectado a la red WiFi. Escanea el QR de tu mesa.</p>
         </div>
 
         <div class="scanner-area">
@@ -253,229 +172,168 @@
 
         <div class="manual-section">
             <div class="manual-toggle">
-                <a id="toggleManualBtn">✏️ ¿Problemas con la cámara? Ingreso manual</a>
+                <a id="toggleManualBtn">✏️ ¿No puedes escanear? Ingresa tus datos manualmente</a>
             </div>
             <div id="manualForm" class="manual-form">
-                <input type="text" id="manualUser" placeholder="Usuario del voucher (ej: mesa01)" autocomplete="off">
+                <input type="text" id="manualUser" placeholder="Usuario (ej: mesa01)" autocomplete="off">
                 <input type="password" id="manualPass" placeholder="Contraseña">
-                <button id="submitManualBtn" class="btn-outline" style="width: 100%;">✅ Conectarse</button>
+                <button id="submitManualBtn" class="btn-primary">✅ Conectarse</button>
             </div>
         </div>
     </div>
 
     <div class="footer">
-        🔒 Sistema RADIUS | Soporte técnico
+        🔒 Sistema seguro | Soporte técnico
     </div>
 </div>
 
+<div id="toast" class="toast"></div>
+
 <script>
-    // ==================== SISTEMA DE ALERTAS ====================
-    function showAlert(title, message, type = 'info', duration = 4000) {
-        const alertSystem = document.getElementById('alertSystem');
-        const alertId = 'alert_' + Date.now();
-        const icons = { success: '✅', error: '❌', warning: '⚠️', info: 'ℹ️' };
-        
-        const alertDiv = document.createElement('div');
-        alertDiv.className = `alert-toast ${type}`;
-        alertDiv.id = alertId;
-        alertDiv.innerHTML = `
-            <div class="alert-icon">${icons[type] || '📢'}</div>
-            <div class="alert-content">
-                <div class="alert-title">${escapeHtml(title)}</div>
-                <div class="alert-message">${escapeHtml(message)}</div>
-            </div>
-        `;
-        
-        alertSystem.appendChild(alertDiv);
-        setTimeout(() => alertDiv.remove(), duration);
-        console.log(`[${type}] ${title}: ${message}`);
+    // ==================== TOAST NOTIFICACIONES ====================
+    function showToast(message, type = 'info') {
+        const toast = document.getElementById('toast');
+        toast.textContent = message;
+        toast.className = `toast show ${type}`;
+        setTimeout(() => {
+            toast.classList.remove('show');
+        }, 3000);
     }
 
-    function escapeHtml(text) {
-        const div = document.createElement('div');
-        div.textContent = text;
-        return div.innerHTML;
-    }
-
-    // ==================== DIAGNÓSTICO COMPLETO ====================
-    function updateDiagnosticPanel() {
-        const diagnosticContent = document.getElementById('diagnosticContent');
-        
-        // Obtener todos los parámetros de la URL
-        const allParams = new URLSearchParams(window.location.search);
-        const paramsList = [];
-        for (const [key, value] of allParams) {
-            paramsList.push(`${key}=${value.substring(0, 50)}${value.length > 50 ? '...' : ''}`);
-        }
-        
-        // Verificar URLs guardadas
-        const savedUrl = localStorage.getItem('gw_url');
-        const savedToken = localStorage.getItem('gw_token');
-        
-        // Detectar si hay portal cautivo
-        const hasGrantUrl = allParams.has('base_grant_url');
-        const hasGrantToken = allParams.has('grant_token');
-        const hasPortalDetected = (hasGrantUrl && hasGrantToken) || (savedUrl && savedToken);
-        
-        // Información del navegador
-        const userAgent = navigator.userAgent;
-        const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(userAgent);
-        
-        diagnosticContent.innerHTML = `
-            <div class="diagnostic-item">
-                <span class="diagnostic-label">📡 Portal Cautivo:</span>
-                <span class="diagnostic-value ${hasPortalDetected ? 'success' : 'error'}">
-                    ${hasPortalDetected ? '✅ DETECTADO' : '❌ NO DETECTADO'}
-                </span>
-            </div>
-            ${hasGrantUrl ? `
-            <div class="diagnostic-item">
-                <span class="diagnostic-label">🔑 base_grant_url:</span>
-                <span class="diagnostic-value success">${escapeHtml(allParams.get('base_grant_url') || 'N/A')}</span>
-            </div>
-            ` : ''}
-            ${hasGrantToken ? `
-            <div class="diagnostic-item">
-                <span class="diagnostic-label">🎫 grant_token:</span>
-                <span class="diagnostic-value success">${escapeHtml(allParams.get('grant_token') || 'N/A')}</span>
-            </div>
-            ` : ''}
-            <div class="diagnostic-item">
-                <span class="diagnostic-label">💾 URL guardada:</span>
-                <span class="diagnostic-value ${savedUrl ? 'success' : 'warning'}">${savedUrl ? escapeHtml(savedUrl) : 'No guardada'}</span>
-            </div>
-            <div class="diagnostic-item">
-                <span class="diagnostic-label">📱 Dispositivo:</span>
-                <span class="diagnostic-value">${isMobile ? 'Móvil' : 'Escritorio'}</span>
-            </div>
-            <div class="diagnostic-item">
-                <span class="diagnostic-label">🔗 URL actual:</span>
-                <span class="diagnostic-value" style="max-width: 70%;">${escapeHtml(window.location.pathname + window.location.search)}</span>
-            </div>
-            <div class="diagnostic-item">
-                <span class="diagnostic-label">📊 Parámetros URL:</span>
-                <span class="diagnostic-value">${paramsList.length > 0 ? paramsList.join(', ') : 'Ninguno'}</span>
-            </div>
-        `;
-        
-        return hasPortalDetected;
-    }
-
-    // ==================== CAPTURA DE PARÁMETROS DEL AP ====================
+    // ==================== CAPTURA PARÁMETROS DEL PORTAL ====================
+    // OBTENER TODOS LOS PARÁMETROS DE LA URL
     const urlParams = new URLSearchParams(window.location.search);
-    const base_grant_url = urlParams.get('base_grant_url');
-    const grant_token = urlParams.get('grant_token');
-
-    // Guardar en localStorage
-    if (base_grant_url && grant_token) {
-        localStorage.setItem('gw_url', base_grant_url);
-        localStorage.setItem('gw_token', grant_token);
-        showAlert('✅ Portal cautivo detectado', 'Configuración guardada correctamente', 'success', 4000);
-        console.log('✅ Parámetros guardados:', { base_grant_url, grant_token });
-    } else if (localStorage.getItem('gw_url') && localStorage.getItem('gw_token')) {
-        showAlert('ℹ️ Usando configuración previa', 'Portal cautivo ya estaba configurado', 'info', 3000);
-        console.log('ℹ️ Usando credenciales guardadas');
-    } else {
-        showAlert('⚠️ Portal NO detectado', 'Asegúrate de conectarte a través del WiFi del local', 'warning', 5000);
-        console.log('⚠️ No se recibieron parámetros del portal cautivo');
-        console.log('URL actual:', window.location.href);
-        console.log('Parámetros disponibles:', Array.from(urlParams.keys()));
+    
+    // Buscar parámetros en MÚLTIPLES FORMATOS (MikroTik, Grandstream, etc)
+    let ap_url = null;
+    let ap_token = null;
+    
+    // Formato 1: Grandstream (base_grant_url, grant_token)
+    if (urlParams.has('base_grant_url') && urlParams.has('grant_token')) {
+        ap_url = urlParams.get('base_grant_url');
+        ap_token = urlParams.get('grant_token');
+        console.log('✅ Formato Grandstream detectado');
+        showToast('✅ Portal cautivo detectado (Grandstream)', 'success');
     }
-
-    // Autenticación por URL directa (u y p)
-    const urlUser = urlParams.get('u');
-    const urlPass = urlParams.get('p');
-    if (urlUser && urlPass) {
-        showAlert('🔑 Voucher detectado en URL', `Usuario: ${urlUser}`, 'info', 3000);
-        setTimeout(() => authenticateVoucher(urlUser, urlPass), 1500);
+    // Formato 2: MikroTik puro (link-login)
+    else if (urlParams.has('link-login')) {
+        ap_url = urlParams.get('link-login');
+        ap_token = urlParams.get('mac') || 'no-token';
+        console.log('✅ Formato MikroTik detectado');
+        showToast('✅ Portal cautivo detectado (MikroTik)', 'success');
     }
-
+    // Formato 3: Parámetros alternativos
+    else if (urlParams.has('u') && urlParams.has('p')) {
+        // Ya tiene usuario y contraseña en URL, autenticar directamente
+        console.log('🔑 Autenticación directa detectada');
+        const directUser = urlParams.get('u');
+        const directPass = urlParams.get('p');
+        showToast(`🔑 Autenticando como ${directUser}...`, 'info');
+        setTimeout(() => {
+            authenticateVoucher(directUser, directPass);
+        }, 500);
+        ap_url = localStorage.getItem('gw_url'); // Intentar recuperar URL guardada
+    }
+    
+    // Guardar en localStorage SIEMPRE que se detecte
+    if (ap_url && ap_token) {
+        localStorage.setItem('gw_url', ap_url);
+        localStorage.setItem('gw_token', ap_token);
+        console.log('💾 Datos guardados:', { ap_url, ap_token });
+        
+        // Actualizar panel de estado
+        document.getElementById('statusDisplay').innerHTML = '<span class="status-badge success">✅ Portal detectado</span>';
+        document.getElementById('statusMessage').innerHTML = 'Portal cautivo detectado. Escanea el QR de tu mesa para conectarte.';
+    } 
+    // Si NO hay portal detectado pero estamos en una red WiFi normal
+    else {
+        console.log('⚠️ No se detectaron parámetros de portal cautivo');
+        
+        // Verificar si estamos en una red que podría tener portal
+        // Por ahora, permitir continuar de todas formas
+        document.getElementById('statusDisplay').innerHTML = '<span class="status-badge warning">⚠️ Verificando</span>';
+        document.getElementById('statusMessage').innerHTML = 'Escanea el QR de tu mesa. Si tienes problemas, usa el acceso manual.';
+        showToast('ℹ️ Escanea el QR para conectarte', 'info');
+    }
+    
+    // Verificar si hay datos guardados previamente
+    const savedUrl = localStorage.getItem('gw_url');
+    const savedToken = localStorage.getItem('gw_token');
+    if (savedUrl && savedToken && !ap_url) {
+        console.log('📦 Usando datos guardados previamente');
+        showToast('📦 Usando configuración previa', 'info');
+    }
+    
     // ==================== AUTENTICACIÓN ====================
     function authenticateVoucher(username, password) {
-        const savedUrl = localStorage.getItem('gw_url');
-        const savedToken = localStorage.getItem('gw_token');
-
-        if (!savedUrl || !savedToken) {
-            showAlert('❌ Error', 'No hay configuración del portal cautivo. Conéctate al WiFi del local.', 'error', 5000);
+        // Priorizar URL recién capturada, luego la guardada
+        let targetUrl = ap_url || localStorage.getItem('gw_url');
+        let targetToken = ap_token || localStorage.getItem('gw_token');
+        
+        // Si no hay URL, intentar redirigir a la página de login estándar
+        if (!targetUrl) {
+            console.warn('⚠️ No hay URL de portal guardada');
+            showToast('⚠️ Conéctate al WiFi del local primero', 'error');
+            
+            // Mostrar opción manual con mensaje claro
+            document.getElementById('statusDisplay').innerHTML = '<span class="status-badge error">❌ Sin portal</span>';
+            document.getElementById('statusMessage').innerHTML = 'Conéctate a la red WiFi "Premium" primero, luego escanea el QR.';
             return false;
         }
-
-        showAlert('🔄 Autenticando', `Validando voucher para ${username}...`, 'info', 2000);
-
+        
+        console.log('🔐 Autenticando:', { username, targetUrl });
+        showToast(`🔄 Validando ${username}...`, 'info');
+        
+        // Construir URL de redirección
         let redirectUrl;
-        if (savedUrl.includes('?')) {
-            redirectUrl = `${savedUrl}&token=${encodeURIComponent(savedToken)}&username=${encodeURIComponent(username)}&password=${encodeURIComponent(password)}`;
+        if (targetUrl.includes('?')) {
+            redirectUrl = `${targetUrl}&token=${encodeURIComponent(targetToken)}&username=${encodeURIComponent(username)}&password=${encodeURIComponent(password)}`;
         } else {
-            redirectUrl = `${savedUrl}?token=${encodeURIComponent(savedToken)}&username=${encodeURIComponent(username)}&password=${encodeURIComponent(password)}`;
+            redirectUrl = `${targetUrl}?token=${encodeURIComponent(targetToken)}&username=${encodeURIComponent(username)}&password=${encodeURIComponent(password)}`;
         }
-
-        console.log('Redirigiendo a:', redirectUrl);
-
+        
+        // También soportar formato MikroTik puro
+        if (targetUrl.includes('link-login')) {
+            redirectUrl = `${targetUrl}&username=${encodeURIComponent(username)}&password=${encodeURIComponent(password)}`;
+        }
+        
+        console.log('🚀 Redirigiendo a:', redirectUrl);
+        
         setTimeout(() => {
-            showAlert('✅ Acceso concedido', `Bienvenido ${username}`, 'success', 1500);
-            setTimeout(() => { window.location.href = redirectUrl; }, 500);
+            showToast(`✅ Acceso concedido a ${username}`, 'success');
+            setTimeout(() => {
+                window.location.href = redirectUrl;
+            }, 500);
         }, 500);
-
+        
         return true;
     }
-
+    
     // ==================== ESCÁNER QR ====================
     let html5QrCode = null;
     let isScanning = false;
-
-    function onScanSuccess(decodedText) {
-        console.log('QR escaneado:', decodedText);
-        showAlert('📱 QR Detectado', 'Procesando código...', 'info', 2000);
-        
-        if (isScanning) stopScanner();
-        
-        let username = null;
-        let password = null;
-        
-        try {
-            if (decodedText.includes('?')) {
-                const qrParams = new URLSearchParams(decodedText.split('?')[1]);
-                username = qrParams.get('u');
-                password = qrParams.get('p');
-            } else if (decodedText.includes('&')) {
-                const qrParams = new URLSearchParams(decodedText);
-                username = qrParams.get('u');
-                password = qrParams.get('p');
-            } else if (decodedText.includes(':')) {
-                const parts = decodedText.split(':');
-                username = parts[0];
-                password = parts[1];
-            } else if (decodedText.includes(',')) {
-                const parts = decodedText.split(',');
-                username = parts[0];
-                password = parts[1];
-            }
-            
-            if (username && password) {
-                showAlert('✅ QR Válido', `Usuario: ${username}`, 'success', 3000);
-                authenticateVoucher(username, password);
-            } else {
-                showAlert('❌ QR Inválido', 'El código no contiene usuario/contraseña', 'error', 4000);
-            }
-        } catch (e) {
-            showAlert('❌ Error', 'No se pudo procesar el QR', 'error', 4000);
-        }
-    }
-
+    
     async function startScanner() {
-        if (isScanning) return;
+        if (isScanning) {
+            showToast('⚠️ Escáner ya activo', 'warning');
+            return;
+        }
         
         try {
-            showAlert('📷 Iniciando cámara', 'Solicitando permiso...', 'info', 2000);
+            showToast('📷 Iniciando cámara...', 'info');
             
             html5QrCode = new Html5Qrcode("qr-reader");
             const cameras = await Html5Qrcode.getCameras();
             
-            if (!cameras || cameras.length === 0) throw new Error('No hay cámaras');
+            if (!cameras || cameras.length === 0) {
+                throw new Error('No se encontraron cámaras');
+            }
             
+            // Seleccionar cámara trasera
             let selectedCamera = cameras[0];
             for (const cam of cameras) {
-                if (cam.label.toLowerCase().includes('back') || cam.label.toLowerCase().includes('environment')) {
+                if (cam.label.toLowerCase().includes('back') || 
+                    cam.label.toLowerCase().includes('environment')) {
                     selectedCamera = cam;
                     break;
                 }
@@ -486,8 +344,9 @@
                 { fps: 10, qrbox: { width: 280, height: 280 } },
                 onScanSuccess,
                 (error) => {
+                    // Ignorar errores de "no QR"
                     if (error && (error.includes('Permission') || error.includes('NotAllowed'))) {
-                        showAlert('🔒 Permiso denegado', 'No se pudo acceder a la cámara', 'error', 4000);
+                        showToast('🔒 Permiso de cámara denegado', 'error');
                         stopScanner();
                     }
                 }
@@ -496,14 +355,14 @@
             isScanning = true;
             document.getElementById('startBtn').disabled = true;
             document.getElementById('stopBtn').disabled = false;
-            showAlert('✅ Escáner listo', 'Apunta al código QR', 'success', 3000);
+            showToast('✅ Escáner listo. Apunta al QR.', 'success');
             
         } catch (err) {
-            showAlert('❌ Error de cámara', err.message, 'error', 5000);
-            document.getElementById('startBtn').disabled = false;
+            console.error('Error:', err);
+            showToast('❌ Error: No se pudo acceder a la cámara', 'error');
         }
     }
-
+    
     async function stopScanner() {
         if (html5QrCode && isScanning) {
             try {
@@ -511,45 +370,101 @@
                 isScanning = false;
                 document.getElementById('startBtn').disabled = false;
                 document.getElementById('stopBtn').disabled = true;
+                showToast('⏹️ Escáner detenido', 'info');
             } catch (err) {}
         }
     }
-
+    
+    function onScanSuccess(decodedText) {
+        console.log('📱 QR escaneado:', decodedText);
+        showToast('📱 QR detectado, procesando...', 'info');
+        
+        if (isScanning) stopScanner();
+        
+        let username = null;
+        let password = null;
+        
+        try {
+            // Método 1: ?u=usuario&p=clave
+            if (decodedText.includes('?')) {
+                const qrParams = new URLSearchParams(decodedText.split('?')[1]);
+                username = qrParams.get('u');
+                password = qrParams.get('p');
+            }
+            // Método 2: u=usuario&p=clave directo
+            else if (decodedText.includes('&')) {
+                const qrParams = new URLSearchParams(decodedText);
+                username = qrParams.get('u');
+                password = qrParams.get('p');
+            }
+            // Método 3: usuario:contraseña
+            else if (decodedText.includes(':')) {
+                const parts = decodedText.split(':');
+                username = parts[0];
+                password = parts[1];
+            }
+            // Método 4: usuario,contraseña
+            else if (decodedText.includes(',')) {
+                const parts = decodedText.split(',');
+                username = parts[0];
+                password = parts[1];
+            }
+            
+            if (username && password) {
+                showToast(`✅ Usuario: ${username}`, 'success');
+                authenticateVoucher(username, password);
+            } else {
+                showToast('❌ QR inválido: No contiene usuario/contraseña', 'error');
+                console.error('Contenido del QR:', decodedText);
+            }
+        } catch (e) {
+            console.error('Error parseando QR:', e);
+            showToast('❌ Error al procesar el QR', 'error');
+        }
+    }
+    
     // ==================== MODO MANUAL ====================
     function toggleManualMode() {
         const manualForm = document.getElementById('manualForm');
         manualForm.classList.toggle('show');
     }
-
-    function submitManualVoucher() {
+    
+    function submitManual() {
         const username = document.getElementById('manualUser').value.trim();
         const password = document.getElementById('manualPass').value.trim();
         
         if (!username || !password) {
-            showAlert('⚠️ Datos incompletos', 'Ingresa usuario y contraseña', 'warning', 3000);
+            showToast('⚠️ Ingresa usuario y contraseña', 'warning');
             return;
         }
         
         authenticateVoucher(username, password);
     }
-
-    // ==================== INICIALIZACIÓN ====================
+    
+    // ==================== EVENTOS ====================
     document.getElementById('startBtn').addEventListener('click', startScanner);
     document.getElementById('stopBtn').addEventListener('click', stopScanner);
     document.getElementById('toggleManualBtn').addEventListener('click', toggleManualMode);
-    document.getElementById('submitManualBtn').addEventListener('click', submitManualVoucher);
+    document.getElementById('submitManualBtn').addEventListener('click', submitManual);
     
-    // Actualizar panel de diagnóstico
-    updateDiagnosticPanel();
+    document.getElementById('manualUser').addEventListener('keypress', (e) => {
+        if (e.key === 'Enter') document.getElementById('manualPass').focus();
+    });
+    document.getElementById('manualPass').addEventListener('keypress', (e) => {
+        if (e.key === 'Enter') submitManual();
+    });
     
-    // Mostrar información en consola
-    console.log('=== DIAGNÓSTICO ===');
-    console.log('URL:', window.location.href);
+    // Limpiar al salir
+    window.addEventListener('beforeunload', async () => {
+        if (html5QrCode && isScanning) {
+            try { await html5QrCode.stop(); } catch(e) {}
+        }
+    });
+    
+    console.log('🚀 App lista');
+    console.log('URL actual:', window.location.href);
     console.log('Parámetros:', Object.fromEntries(urlParams));
-    console.log('LocalStorage:', { gw_url: localStorage.getItem('gw_url'), gw_token: localStorage.getItem('gw_token') });
-    
-    // Mensaje de inicio
-    showAlert('🚀 Sistema listo', 'Escanea el QR de tu mesa', 'success', 3000);
+    console.log('LocalStorage:', { url: localStorage.getItem('gw_url'), token: localStorage.getItem('gw_token') });
 </script>
 </body>
 </html>
