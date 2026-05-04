@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>WiFi Local - Escanea el QR</title>
+    <style>
+        body { font-family: sans-serif; text-align: center; padding-top: 50px; background: #f4f4f4; }
+        .box { background: white; padding: 20px; border-radius: 15px; display: inline-block; box-shadow: 0 4px 6px rgba(0,0,0,0.1); }
+    </style>
+</head>
+<body>
+    <div class="box">
+        <h2 id="msg">Conéctate al WiFi</h2>
+        <p id="sub">Escanea el código QR que está en tu mesa para activar el internet.</p>
+        
+        <form id="portal-form" method="post">
+            <input type="hidden" name="tok" id="tok">
+            <input type="hidden" name="redir" id="redir">
+        </form>
+    </div>
+
+    <script>
+        const params = new URLSearchParams(window.location.search);
+        const tok = params.get('grant_token') || params.get('tok');
+        const auth = params.get('authaction') || params.get('base_grant_url');
+        
+        // Guardamos el token en la sesión por si el usuario cierra el navegador al escanear
+        if(tok) sessionStorage.setItem('wifi_tok', tok);
+        if(auth) sessionStorage.setItem('wifi_auth', auth);
+
+        // Si la URL tiene ?access=true (viene del QR)
+        if (params.get('access') === 'true') {
+            const savedTok = sessionStorage.getItem('wifi_tok');
+            const savedAuth = sessionStorage.getItem('wifi_auth');
+            
+            if (savedTok && savedAuth) {
+                document.getElementById('msg').innerText = "¡Validando acceso!";
+                const form = document.getElementById('portal-form');
+                form.action = savedAuth;
+                document.getElementById('tok').value = savedTok;
+                form.submit();
+            } else {
+                document.getElementById('msg').innerText = "Error: Token no encontrado. Reintenta conectarte al WiFi.";
+            }
+        }
+    </script>
+</body>
+</html>
