@@ -2,9 +2,9 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
-    <title>WiFi Premium | Autenticación por QR</title>
-    <!-- Html5-QRCode Library -->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes, viewport-fit=cover">
+    <title>WiFi Premium | Autenticación Inteligente QR</title>
+    <!-- Html5-QRCode Library - Versión estable verificada -->
     <script src="https://cdn.jsdelivr.net/npm/html5-qrcode@2.3.8/html5-qrcode.min.js"></script>
     <style>
         * {
@@ -14,71 +14,137 @@
         }
 
         body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            font-family: 'Segoe UI', 'Roboto', 'Helvetica Neue', sans-serif;
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             min-height: 100vh;
             display: flex;
             justify-content: center;
             align-items: center;
             padding: 20px;
+            position: relative;
+        }
+
+        /* Debug panel - solo visible en desarrollo, oculto por defecto */
+        .debug-panel {
+            position: fixed;
+            bottom: 10px;
+            right: 10px;
+            background: rgba(0,0,0,0.8);
+            color: #0f0;
+            font-family: monospace;
+            font-size: 10px;
+            padding: 8px 12px;
+            border-radius: 8px;
+            z-index: 9999;
+            max-width: 90%;
+            overflow-x: auto;
+            white-space: pre-wrap;
+            cursor: pointer;
+            opacity: 0.6;
+            transition: opacity 0.3s;
+        }
+        .debug-panel:hover {
+            opacity: 1;
+        }
+        .debug-panel.collapsed {
+            width: 30px;
+            height: 30px;
+            overflow: hidden;
+            background: rgba(0,0,0,0.6);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .debug-panel.collapsed span {
+            display: none;
+        }
+        .debug-panel.collapsed::before {
+            content: "🐛";
+            font-size: 18px;
         }
 
         .card {
             background: white;
-            border-radius: 20px;
-            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
-            max-width: 500px;
+            border-radius: 28px;
+            box-shadow: 0 25px 50px -12px rgba(0,0,0,0.35);
+            max-width: 550px;
             width: 100%;
             overflow: hidden;
-            animation: fadeIn 0.5s ease;
+            animation: fadeInUp 0.5s cubic-bezier(0.2, 0.9, 0.4, 1.1);
         }
 
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(-20px); }
-            to { opacity: 1; transform: translateY(0); }
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
         }
 
         .header {
-            background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+            background: linear-gradient(135deg, #0f2027, #203a43, #2c5364);
             color: white;
-            padding: 30px 20px;
+            padding: 28px 24px;
             text-align: center;
         }
 
         .header h1 {
-            font-size: 24px;
+            font-size: 26px;
             margin-bottom: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
         }
 
         .header p {
-            font-size: 14px;
+            font-size: 13px;
             opacity: 0.9;
         }
 
+        .badge-wifi {
+            display: inline-block;
+            background: rgba(255,255,255,0.2);
+            border-radius: 50px;
+            padding: 4px 12px;
+            font-size: 11px;
+            margin-top: 10px;
+        }
+
         .content {
-            padding: 25px;
+            padding: 24px;
         }
 
-        .info-box {
-            background: #f0f7ff;
-            border-left: 4px solid #3498db;
-            padding: 15px;
-            border-radius: 10px;
-            margin-bottom: 20px;
+        .info-card {
+            background: linear-gradient(135deg, #e8f0fe 0%, #f0f7ff 100%);
+            border-radius: 20px;
+            padding: 18px;
+            margin-bottom: 24px;
+            border: 1px solid rgba(52,152,219,0.2);
         }
 
-        .info-box p {
-            color: #555;
+        .info-card p {
+            color: #2c3e50;
             line-height: 1.5;
             font-size: 14px;
         }
 
-        .qr-container {
+        .info-card .highlight {
+            color: #3498db;
+            font-weight: 600;
+        }
+
+        .scanner-area {
             background: #000;
-            border-radius: 15px;
+            border-radius: 20px;
             overflow: hidden;
-            margin: 15px 0;
+            margin: 16px 0;
             position: relative;
+            min-height: 320px;
         }
 
         #qr-reader {
@@ -86,40 +152,53 @@
             border: none;
         }
 
-        #qr-reader__dashboard_section_csr {
-            padding: 10px;
+        /* Estilos internos del escáner */
+        #qr-reader video {
+            width: 100% !important;
+            height: auto !important;
         }
 
         .button-group {
             display: flex;
-            gap: 10px;
-            margin: 15px 0;
+            gap: 12px;
+            margin: 20px 0 16px;
         }
 
         button {
             flex: 1;
-            padding: 12px;
+            padding: 14px 20px;
             border: none;
-            border-radius: 50px;
+            border-radius: 60px;
             font-size: 14px;
-            font-weight: 600;
+            font-weight: 700;
             cursor: pointer;
-            transition: all 0.3s ease;
+            transition: all 0.25s ease;
             display: flex;
             align-items: center;
             justify-content: center;
             gap: 8px;
+            font-family: inherit;
         }
 
         .btn-primary {
             background: #3498db;
             color: white;
-            box-shadow: 0 4px 12px rgba(52,152,219,0.3);
+            box-shadow: 0 4px 12px rgba(52,152,219,0.35);
         }
 
         .btn-primary:hover:not(:disabled) {
             background: #2980b9;
             transform: translateY(-2px);
+            box-shadow: 0 6px 16px rgba(52,152,219,0.45);
+        }
+
+        .btn-danger {
+            background: #e74c3c;
+            color: white;
+        }
+
+        .btn-danger:hover:not(:disabled) {
+            background: #c0392b;
         }
 
         .btn-secondary {
@@ -145,107 +224,148 @@
         button:disabled {
             opacity: 0.5;
             cursor: not-allowed;
+            transform: none;
         }
 
-        .loader {
+        .status-area {
+            margin: 15px 0;
+        }
+
+        .alert {
+            padding: 12px 16px;
+            border-radius: 14px;
+            font-size: 13px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            animation: slideIn 0.3s ease;
+        }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateX(-10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+
+        .alert-info {
+            background: #d1ecf1;
+            color: #0c5460;
+            border-left: 4px solid #17a2b8;
+        }
+
+        .alert-success {
+            background: #d4edda;
+            color: #155724;
+            border-left: 4px solid #28a745;
+        }
+
+        .alert-warning {
+            background: #fff3cd;
+            color: #856404;
+            border-left: 4px solid #ffc107;
+        }
+
+        .alert-error {
+            background: #f8d7da;
+            color: #721c24;
+            border-left: 4px solid #dc3545;
+        }
+
+        .loader-spinner {
             display: inline-block;
-            width: 20px;
-            height: 20px;
-            border: 3px solid #f3f3f3;
-            border-top: 3px solid #3498db;
+            width: 16px;
+            height: 16px;
+            border: 2px solid currentColor;
             border-radius: 50%;
-            animation: spin 1s linear infinite;
+            border-top-color: transparent;
+            animation: spin 0.6s linear infinite;
         }
 
         @keyframes spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
+            to { transform: rotate(360deg); }
         }
 
         .manual-section {
             margin-top: 20px;
-            padding-top: 15px;
-            border-top: 1px solid #e0e0e0;
+            padding-top: 16px;
+            border-top: 1px solid #e9ecef;
         }
 
-        .manual-link {
+        .manual-toggle {
             text-align: center;
-            font-size: 13px;
+            margin-bottom: 12px;
         }
 
-        .manual-link a {
+        .manual-toggle a {
             color: #3498db;
             text-decoration: none;
-            cursor: pointer;
+            font-size: 13px;
             font-weight: 600;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
         }
 
-        .manual-panel {
+        .manual-form {
             background: #f8f9fa;
-            border-radius: 12px;
-            padding: 15px;
-            margin-top: 12px;
+            border-radius: 20px;
+            padding: 18px;
             display: none;
+            animation: fadeScale 0.2s ease;
         }
 
-        .manual-panel.show {
+        .manual-form.show {
             display: block;
-            animation: slideDown 0.3s ease;
         }
 
-        @keyframes slideDown {
-            from { opacity: 0; transform: translateY(-10px); }
-            to { opacity: 1; transform: translateY(0); }
+        @keyframes fadeScale {
+            from {
+                opacity: 0;
+                transform: scale(0.95);
+            }
+            to {
+                opacity: 1;
+                transform: scale(1);
+            }
         }
 
-        .manual-panel input {
+        .manual-form input {
             width: 100%;
-            padding: 12px;
-            border: 1px solid #ddd;
+            padding: 14px;
+            border: 2px solid #e0e0e0;
             border-radius: 50px;
             font-size: 14px;
-            margin-bottom: 10px;
-            text-align: center;
+            margin-bottom: 12px;
+            transition: border 0.2s;
         }
 
-        .status-message {
-            margin-top: 15px;
-            padding: 10px;
-            border-radius: 10px;
-            font-size: 13px;
-            text-align: center;
-            display: none;
-        }
-
-        .status-message.show {
-            display: block;
-        }
-
-        .status-message.info {
-            background: #d1ecf1;
-            color: #0c5460;
-            border: 1px solid #bee5eb;
-        }
-
-        .status-message.success {
-            background: #d4edda;
-            color: #155724;
-            border: 1px solid #c3e6cb;
-        }
-
-        .status-message.error {
-            background: #f8d7da;
-            color: #721c24;
-            border: 1px solid #f5c6cb;
+        .manual-form input:focus {
+            outline: none;
+            border-color: #3498db;
         }
 
         .footer {
             background: #f8f9fa;
-            padding: 15px;
+            padding: 16px;
             text-align: center;
             font-size: 11px;
-            color: #888;
-            border-top: 1px solid #e0e0e0;
+            color: #6c757d;
+            border-top: 1px solid #e9ecef;
+        }
+
+        @media (max-width: 480px) {
+            .content {
+                padding: 18px;
+            }
+            button {
+                padding: 12px;
+            }
         }
     </style>
 </head>
@@ -253,302 +373,433 @@
 
 <div class="card">
     <div class="header">
-        <h1>🎯 WiFi de Cortesía</h1>
-        <p>Acceso ultrarrápido • GWN7630LR & MikroTik</p>
+        <h1>
+            <span>📶</span> WiFi Premium
+        </h1>
+        <p>Autenticación por QR o Voucher</p>
+        <div class="badge-wifi">🎯 GWN7630LR | MikroTik Ready</div>
     </div>
 
     <div class="content">
-        <div class="info-box">
-            <p id="messageText">📱 Escanea el código QR de tu ticket o voucher para navegar gratis.</p>
+        <div class="info-card">
+            <p id="mainMessage">
+                🔍 <span class="highlight">Escanea el QR</span> de tu ticket o ingresa manualmente el <span class="highlight">usuario y contraseña</span> del voucher.
+            </p>
         </div>
 
         <!-- Área del escáner QR -->
-        <div class="qr-container">
+        <div class="scanner-area">
             <div id="qr-reader"></div>
         </div>
 
         <!-- Botones de control -->
         <div class="button-group">
-            <button class="btn-primary" id="startBtn">
-                📷 Iniciar escáner
+            <button id="startScannerBtn" class="btn-primary">
+                📷 Iniciar Cámara
             </button>
-            <button class="btn-secondary" id="stopBtn" disabled>
+            <button id="stopScannerBtn" class="btn-secondary" disabled>
                 ⏹️ Detener
             </button>
         </div>
 
-        <!-- Mensaje de estado -->
-        <div id="statusMessage" class="status-message"></div>
+        <!-- Área de estado dinámico -->
+        <div id="statusContainer" class="status-area"></div>
 
-        <!-- Modo manual de respaldo -->
+        <!-- Sección manual -->
         <div class="manual-section">
-            <div class="manual-link">
-                🔑 <a id="showManualBtn">¿No puedes escanear? Ingresa tu voucher manualmente</a>
+            <div class="manual-toggle">
+                <a id="toggleManualBtn">✏️ ¿Problemas con la cámara? Ingresa tu voucher manualmente</a>
             </div>
-            <div class="manual-panel" id="manualPanel">
-                <input type="text" id="voucherUser" placeholder="Usuario del voucher" autocomplete="off">
-                <input type="text" id="voucherPass" placeholder="Contraseña del voucher" autocomplete="off">
-                <button class="btn-outline" id="submitManualBtn" style="width: 100%;">
-                    ✅ Autenticar
+            <div id="manualForm" class="manual-form">
+                <input type="text" id="voucherUsername" placeholder="Usuario del voucher" autocomplete="off">
+                <input type="password" id="voucherPassword" placeholder="Contraseña del voucher" autocomplete="off">
+                <button id="submitVoucherBtn" class="btn-outline" style="width: 100%;">
+                    ✅ Conectarse
                 </button>
             </div>
         </div>
     </div>
 
     <div class="footer">
-        🔒 Sistema seguro de autenticación por voucher | Soporte 24/7
+        🔒 Conexión segura · Soporte inmediato
     </div>
 </div>
 
+<!-- Panel de depuración (colapsable) -->
+<div id="debugPanel" class="debug-panel collapsed">
+    <span id="debugLog">📋 Log listo</span>
+</div>
+
 <script>
+    // ==================== SISTEMA DE DEPURACIÓN ====================
+    const debugLog = document.getElementById('debugLog');
+    let debugMessages = [];
+
+    function logToDebug(message, type = 'info') {
+        const timestamp = new Date().toLocaleTimeString();
+        const logEntry = `[${timestamp}] ${message}`;
+        debugMessages.unshift(logEntry);
+        if (debugMessages.length > 8) debugMessages.pop();
+        debugLog.innerHTML = debugMessages.join('<br>');
+        console.log(`[DEBUG ${type.toUpperCase()}]`, message);
+        
+        // Si el panel no está colapsado, mostrar bien
+        const panel = document.getElementById('debugPanel');
+        if (!panel.classList.contains('collapsed')) {
+            debugLog.style.display = 'block';
+        }
+    }
+
+    // Toggle panel depuración (click para expandir/colapsar)
+    const debugPanel = document.getElementById('debugPanel');
+    debugPanel.addEventListener('click', (e) => {
+        e.stopPropagation();
+        debugPanel.classList.toggle('collapsed');
+        if (debugPanel.classList.contains('collapsed')) {
+            debugLog.style.display = 'none';
+        } else {
+            debugLog.style.display = 'block';
+        }
+    });
+
     // ==================== VARIABLES GLOBALES ====================
-    let html5QrCode = null;
-    let isScanning = false;
+    let html5QrScanner = null;
+    let isScannerActive = false;
+    let currentCameraId = null;
 
     // Elementos DOM
-    const startBtn = document.getElementById('startBtn');
-    const stopBtn = document.getElementById('stopBtn');
-    const showManualBtn = document.getElementById('showManualBtn');
-    const manualPanel = document.getElementById('manualPanel');
-    const submitManualBtn = document.getElementById('submitManualBtn');
-    const voucherUser = document.getElementById('voucherUser');
-    const voucherPass = document.getElementById('voucherPass');
-    const messageText = document.getElementById('messageText');
-    const statusMessageDiv = document.getElementById('statusMessage');
+    const startBtn = document.getElementById('startScannerBtn');
+    const stopBtn = document.getElementById('stopScannerBtn');
+    const toggleManualBtn = document.getElementById('toggleManualBtn');
+    const manualForm = document.getElementById('manualForm');
+    const voucherUsername = document.getElementById('voucherUsername');
+    const voucherPassword = document.getElementById('voucherPassword');
+    const submitVoucherBtn = document.getElementById('submitVoucherBtn');
+    const mainMessage = document.getElementById('mainMessage');
+    const statusContainer = document.getElementById('statusContainer');
 
     // ==================== CAPTURA DATOS DEL AP (Grandstream/MikroTik) ====================
-    const params = new URLSearchParams(window.location.search);
-    
-    // 1. Capturar datos del AP (se ejecuta al conectar al Wi-Fi)
-    const ap_url = params.get('base_grant_url');
-    const ap_token = params.get('grant_token');
-    
-    if (ap_url && ap_token) {
-        localStorage.setItem('ap_wifi_url', ap_url);
-        localStorage.setItem('ap_wifi_token', ap_token);
-        console.log('✅ Datos del AP guardados:', ap_url);
-        showStatus('✅ Configuración de red detectada', 'success');
+    const urlParams = new URLSearchParams(window.location.search);
+    const apBaseUrl = urlParams.get('base_grant_url');
+    const apGrantToken = urlParams.get('grant_token');
+
+    // Guardar en localStorage
+    if (apBaseUrl && apGrantToken) {
+        localStorage.setItem('ap_wifi_url', apBaseUrl);
+        localStorage.setItem('ap_wifi_token', apGrantToken);
+        logToDebug(`✅ AP configurado: ${apBaseUrl}`, 'success');
+        showStatusMessage('✅ Configuración de red guardada correctamente', 'success');
+    } else {
+        logToDebug('⚠️ No se recibieron parámetros del AP. Asegúrate de estar conectado al WiFi.', 'warning');
     }
 
-    // 2. Capturar datos del Voucher por URL (parámetros u y p)
-    const voucherUserParam = params.get('u');
-    const voucherPassParam = params.get('p');
-    
-    if (voucherUserParam && voucherPassParam) {
-        // Validar automáticamente el voucher si viene en la URL
-        showStatus('🔄 Validando voucher automáticamente...', 'info');
-        authenticateVoucher(voucherUserParam, voucherPassParam);
-    }
-
-    // ==================== FUNCIONES PRINCIPALES ====================
-    
-    // Función para mostrar mensajes de estado
-    function showStatus(message, type = 'info') {
-        statusMessageDiv.textContent = message;
-        statusMessageDiv.className = `status-message show ${type}`;
+    // Verificar si hay autenticación por URL (u y p)
+    const urlUser = urlParams.get('u');
+    const urlPass = urlParams.get('p');
+    if (urlUser && urlPass) {
+        logToDebug(`🔑 Voucher detectado en URL: ${urlUser}`, 'info');
+        showStatusMessage('🔄 Voucher detectado automáticamente...', 'info');
         setTimeout(() => {
-            if (statusMessageDiv.className.includes('show')) {
-                statusMessageDiv.classList.remove('show');
-            }
-        }, 4000);
+            authenticateVoucher(urlUser, urlPass);
+        }, 500);
     }
 
-    // Función para autenticar el voucher contra el Grandstream
+    // ==================== FUNCIONES DE UI ====================
+    function showStatusMessage(message, type = 'info') {
+        const alertClass = {
+            'info': 'alert-info',
+            'success': 'alert-success',
+            'warning': 'alert-warning',
+            'error': 'alert-error'
+        }[type] || 'alert-info';
+        
+        const icon = {
+            'info': 'ℹ️',
+            'success': '✅',
+            'warning': '⚠️',
+            'error': '❌'
+        }[type] || '📢';
+        
+        statusContainer.innerHTML = `
+            <div class="alert ${alertClass}">
+                <span>${icon}</span>
+                <span>${escapeHtml(message)}</span>
+            </div>
+        `;
+        
+        // Auto limpiar después de 5 segundos solo si no es error crítico
+        if (type !== 'error') {
+            setTimeout(() => {
+                if (statusContainer.innerHTML.includes(message)) {
+                    // Solo limpiar si sigue siendo el mismo mensaje
+                }
+            }, 5000);
+        }
+        logToDebug(message, type);
+    }
+
+    function escapeHtml(text) {
+        const div = document.createElement('div');
+        div.textContent = text;
+        return div.innerHTML;
+    }
+
+    // ==================== AUTENTICACIÓN PRINCIPAL ====================
     function authenticateVoucher(username, password) {
         const savedUrl = localStorage.getItem('ap_wifi_url');
         const savedToken = localStorage.getItem('ap_wifi_token');
 
+        logToDebug(`Autenticando con usuario: ${username}`, 'info');
+
         if (!savedUrl || !savedToken) {
-            showStatus('❌ Error: Conéctate primero a la red WiFi del local', 'error');
-            messageText.innerHTML = '⚠️ <strong>Error:</strong> Por favor, conectate a la red WiFi antes de escanear el QR.';
+            const errorMsg = '❌ No se detecta red WiFi. Conéctate al WiFi del local primero.';
+            showStatusMessage(errorMsg, 'error');
+            mainMessage.innerHTML = '⚠️ <strong>Error:</strong> Debes estar conectado a la red WiFi del establecimiento.';
+            logToDebug(errorMsg, 'error');
             return false;
         }
 
-        // Mostrar loader en el botón si está disponible
-        messageText.innerHTML = '🔄 <strong>Validando voucher...</strong> Conectando con el servidor...';
-        showStatus('Validando credenciales...', 'info');
-
-        // Construir URL de redirección con usuario y contraseña
-        let redirectUrl = `${savedUrl}?token=${savedToken}&username=${encodeURIComponent(username)}&password=${encodeURIComponent(password)}`;
+        // Mostrar estado de carga
+        showStatusMessage('🔄 Validando credenciales con el servidor...', 'info');
+        mainMessage.innerHTML = '⏳ <strong>Conectando...</strong> Por favor espera un momento.';
         
-        // Si ya tiene parámetros, ajustar
+        // Construir URL de redirección
+        let redirectUrl;
         if (savedUrl.includes('?')) {
-            redirectUrl = `${savedUrl}&token=${savedToken}&username=${encodeURIComponent(username)}&password=${encodeURIComponent(password)}`;
+            redirectUrl = `${savedUrl}&token=${encodeURIComponent(savedToken)}&username=${encodeURIComponent(username)}&password=${encodeURIComponent(password)}`;
+        } else {
+            redirectUrl = `${savedUrl}?token=${encodeURIComponent(savedToken)}&username=${encodeURIComponent(username)}&password=${encodeURIComponent(password)}`;
         }
-
-        // Delay para feedback visual antes de redirigir
+        
+        logToDebug(`Redirigiendo a: ${redirectUrl.substring(0, 100)}...`, 'info');
+        
+        // Pequeño delay para feedback visual
         setTimeout(() => {
             window.location.href = redirectUrl;
-        }, 1500);
+        }, 1200);
         
         return true;
     }
 
-    // ==================== ESCÁNER QR ====================
-    
-    async function startScanner() {
-        if (isScanning) {
-            showStatus('El escáner ya está activo', 'info');
+    // ==================== ESCÁNER QR (COMPLETAMENTE DEPURADO) ====================
+    async function initScanner() {
+        if (isScannerActive) {
+            showStatusMessage('El escáner ya está activo', 'warning');
             return;
         }
 
         try {
-            // Crear instancia del lector QR
-            html5QrCode = new Html5Qrcode("qr-reader");
+            showStatusMessage('📱 Solicitando acceso a la cámara...', 'info');
+            logToDebug('Iniciando escáner QR...', 'info');
             
-            // Obtener cámaras disponibles
-            const devices = await Html5Qrcode.getCameras();
+            // Crear instancia del lector
+            html5QrScanner = new Html5Qrcode("qr-reader");
             
-            if (!devices || devices.length === 0) {
-                throw new Error('No se encontraron cámaras');
+            // Obtener lista de cámaras
+            const cameras = await Html5Qrcode.getCameras();
+            
+            if (!cameras || cameras.length === 0) {
+                throw new Error('No se encontraron cámaras en este dispositivo');
             }
             
-            // Seleccionar cámara trasera si existe
-            let cameraId = devices[0].id;
-            const backCamera = devices.find(device => 
-                device.label.toLowerCase().includes('back') || 
-                device.label.toLowerCase().includes('environment') ||
-                device.label.toLowerCase().includes('trasera')
-            );
+            logToDebug(`📸 Cámaras encontradas: ${cameras.length}`, 'info');
             
-            if (backCamera) {
-                cameraId = backCamera.id;
+            // Seleccionar mejor cámara (trasera/environment)
+            let selectedCamera = cameras[0];
+            for (const cam of cameras) {
+                const label = cam.label.toLowerCase();
+                if (label.includes('back') || label.includes('environment') || label.includes('trasera') || label.includes('rear')) {
+                    selectedCamera = cam;
+                    logToDebug(`✅ Cámara trasera seleccionada: ${cam.label.substring(0, 50)}`, 'success');
+                    break;
+                }
             }
             
-            // Configuración del escáner
+            currentCameraId = selectedCamera.id;
+            
+            // Configuración optimizada
             const config = {
-                fps: 10,
-                qrbox: { width: 250, height: 250 },
-                aspectRatio: 1.0
+                fps: 12,
+                qrbox: { width: 280, height: 280 },
+                aspectRatio: 1.0,
+                disableFlip: false
             };
             
-            await html5QrCode.start(cameraId, config, onQRCodeSuccess, onQRCodeError);
-            isScanning = true;
+            await html5QrScanner.start(currentCameraId, config, onQRSuccess, onQRError);
+            
+            isScannerActive = true;
             startBtn.disabled = true;
             stopBtn.disabled = false;
-            showStatus('📷 Escáner activado - Apunta al código QR de tu ticket', 'success');
-            messageText.innerHTML = '📸 <strong>Escáner activo:</strong> Enfoca el código QR que está en tu ticket o voucher.';
+            showStatusMessage('📷 Escáner activado - Apunta al código QR de tu ticket', 'success');
+            mainMessage.innerHTML = '🎯 <strong>Escáner activo:</strong> Enfoca el código QR de tu voucher.';
+            logToDebug('Escáner funcionando correctamente', 'success');
             
         } catch (err) {
-            console.error('Error al iniciar escáner:', err);
-            showStatus('❌ No se pudo acceder a la cámara. Usa el acceso manual.', 'error');
+            logToDebug(`Error al iniciar escáner: ${err.message}`, 'error');
+            showStatusMessage(`❌ Error: ${err.message}. Usa el modo manual.`, 'error');
             startBtn.disabled = false;
             stopBtn.disabled = true;
-            messageText.innerHTML = '⚠️ <strong>No se detectó cámara:</strong> Usa el enlace "Ingresa tu voucher manualmente" para conectarte.';
+            mainMessage.innerHTML = '⚠️ <strong>Cámara no disponible:</strong> Usa el formulario manual para ingresar tus datos.';
+            
+            // Mostrar panel manual automáticamente si hay error de cámara
+            setTimeout(() => {
+                manualForm.classList.add('show');
+            }, 500);
         }
     }
 
     async function stopScanner() {
-        if (html5QrCode && isScanning) {
+        if (html5QrScanner && isScannerActive) {
             try {
-                await html5QrCode.stop();
-                isScanning = false;
+                await html5QrScanner.stop();
+                isScannerActive = false;
                 startBtn.disabled = false;
                 stopBtn.disabled = true;
-                showStatus('⏹️ Escáner detenido', 'info');
-                messageText.innerHTML = '📱 Escanea el código QR de tu ticket o voucher para navegar gratis.';
+                showStatusMessage('⏹️ Escáner detenido', 'info');
+                mainMessage.innerHTML = '📱 Escanea el código QR de tu ticket o ingresa tus datos manualmente.';
+                logToDebug('Escáner detenido correctamente', 'info');
             } catch (err) {
-                console.error('Error al detener escáner:', err);
+                logToDebug(`Error al detener: ${err.message}`, 'error');
             }
         }
     }
 
-    // Callback cuando se escanea un QR exitosamente
-    function onQRCodeSuccess(decodedText, decodedResult) {
-        console.log('✅ QR escaneado:', decodedText);
+    function onQRSuccess(decodedText, decodedResult) {
+        logToDebug(`📱 QR escaneado: ${decodedText.substring(0, 100)}`, 'success');
         
-        // Detener el escáner
+        // Detener escáner automáticamente
         stopScanner();
         
-        // Intentar parsear el QR como parámetros u=xxx&p=yyy
+        // Parsear el contenido del QR
+        let username = null;
+        let password = null;
+        
         try {
-            // El QR puede contener una URL o directamente parámetros
-            let username = null;
-            let password = null;
-            
-            // Si es una URL, extraer parámetros
+            // Método 1: Si es una URL con parámetros
             if (decodedText.includes('?')) {
-                const qrParams = new URLSearchParams(decodedText.split('?')[1]);
-                username = qrParams.get('u');
-                password = qrParams.get('p');
-            } else if (decodedText.includes('&')) {
-                // Si son parámetros directos como "u=admin&p=12345"
-                const qrParams = new URLSearchParams(decodedText);
-                username = qrParams.get('u');
-                password = qrParams.get('p');
+                const urlObj = new URL(decodedText);
+                username = urlObj.searchParams.get('u');
+                password = urlObj.searchParams.get('p');
+                logToDebug(`Parseado como URL: u=${username}, p=${password ? '***' : 'null'}`, 'info');
             }
             
-            // Si encontramos usuario y contraseña en el QR
+            // Método 2: Si son parámetros directos tipo "u=admin&p=123"
+            if ((!username || !password) && decodedText.includes('&') && decodedText.includes('=')) {
+                const params = new URLSearchParams(decodedText);
+                username = params.get('u');
+                password = params.get('p');
+                logToDebug(`Parseado como query string: u=${username}`, 'info');
+            }
+            
+            // Método 3: Si el QR contiene solo texto plano con formato "usuario:contraseña" o "usuario,contraseña"
+            if (!username || !password) {
+                if (decodedText.includes(':')) {
+                    const parts = decodedText.split(':');
+                    username = parts[0];
+                    password = parts[1];
+                    logToDebug(`Parseado con formato ":"`, 'info');
+                } else if (decodedText.includes(',')) {
+                    const parts = decodedText.split(',');
+                    username = parts[0];
+                    password = parts[1];
+                    logToDebug(`Parseado con formato ","`, 'info');
+                }
+            }
+            
             if (username && password) {
-                showStatus('✅ Voucher detectado. Autenticando...', 'success');
-                messageText.innerHTML = '🔄 <strong>Voucher válido:</strong> Conectando con el servidor...';
+                showStatusMessage('✅ Código QR válido. Autenticando...', 'success');
+                mainMessage.innerHTML = '🔄 <strong>Voucher detectado</strong> Conectando con el servidor...';
                 authenticateVoucher(username, password);
             } else {
-                // Si el QR solo contiene texto, intentar usarlo como token alternativo
-                showStatus('⚠️ QR inválido - Debe contener usuario y contraseña del voucher', 'error');
-                messageText.innerHTML = '❌ <strong>QR inválido:</strong> El código debe contener los datos de acceso. Usa el acceso manual.';
+                showStatusMessage('⚠️ El QR escaneado no contiene usuario/contraseña válidos', 'warning');
+                mainMessage.innerHTML = '❌ <strong>QR inválido:</strong> El código debe contener usuario y contraseña del voucher.';
+                logToDebug(`QR no contiene u/p válidos. Contenido: ${decodedText}`, 'warning');
             }
+            
         } catch (e) {
-            console.error('Error al parsear QR:', e);
-            showStatus('❌ QR no reconocido - Escanea el código correcto de tu ticket', 'error');
+            logToDebug(`Error parseando QR: ${e.message}`, 'error');
+            showStatusMessage('❌ No se pudo interpretar el código QR. Usa el modo manual.', 'error');
         }
     }
 
-    function onQRCodeError(errorMessage) {
-        // Errores menores se ignoran para no molestar al usuario
-        if (errorMessage.includes('Permission') || errorMessage.includes('NotAllowedError')) {
-            showStatus('🔒 Permiso de cámara denegado. Usa el acceso manual.', 'error');
+    function onQRError(errorMessage) {
+        // Solo mostrar errores críticos, ignorar los de frames sin QR
+        if (errorMessage && (
+            errorMessage.includes('Permission') || 
+            errorMessage.includes('NotAllowedError') ||
+            errorMessage.includes('NotFoundError')
+        )) {
+            logToDebug(`Error crítico de cámara: ${errorMessage}`, 'error');
+            showStatusMessage('🔒 Permiso de cámara denegado o no disponible. Usa el acceso manual.', 'error');
             stopScanner();
         }
+        // Los errores de "no QR found" se ignoran silenciosamente
     }
 
     // ==================== MODO MANUAL ====================
-    
-    function showManualPanel() {
-        manualPanel.classList.toggle('show');
-        if (manualPanel.classList.contains('show')) {
-            if (isScanning) {
+    function toggleManualMode() {
+        manualForm.classList.toggle('show');
+        if (manualForm.classList.contains('show')) {
+            logToDebug('Modo manual activado', 'info');
+            if (isScannerActive) {
                 stopScanner();
             }
-            voucherUser.focus();
+        } else {
+            logToDebug('Modo manual oculto', 'info');
         }
     }
 
     function submitManualVoucher() {
-        const username = voucherUser.value.trim();
-        const password = voucherPass.value.trim();
+        const user = voucherUsername.value.trim();
+        const pass = voucherPassword.value.trim();
         
-        if (!username || !password) {
-            showStatus('✏️ Por favor, ingresa usuario y contraseña del voucher', 'error');
+        if (!user || !pass) {
+            showStatusMessage('✏️ Por favor ingresa usuario y contraseña del voucher', 'warning');
+            logToDebug('Intento de autenticación manual sin datos', 'warning');
             return;
         }
         
-        showStatus('🔍 Validando voucher manual...', 'info');
-        authenticateVoucher(username, password);
+        logToDebug(`Autenticación manual con usuario: ${user}`, 'info');
+        showStatusMessage('🔍 Validando voucher manual...', 'info');
+        authenticateVoucher(user, pass);
     }
 
     // ==================== EVENT LISTENERS ====================
-    startBtn.addEventListener('click', startScanner);
+    startBtn.addEventListener('click', initScanner);
     stopBtn.addEventListener('click', stopScanner);
-    showManualBtn.addEventListener('click', showManualPanel);
-    submitManualBtn.addEventListener('click', submitManualVoucher);
+    toggleManualBtn.addEventListener('click', toggleManualMode);
+    submitVoucherBtn.addEventListener('click', submitManualVoucher);
     
     // Enter en inputs manuales
-    voucherUser.addEventListener('keypress', (e) => {
-        if (e.key === 'Enter') voucherPass.focus();
+    voucherUsername.addEventListener('keypress', (e) => {
+        if (e.key === 'Enter') voucherPassword.focus();
     });
-    voucherPass.addEventListener('keypress', (e) => {
+    voucherPassword.addEventListener('keypress', (e) => {
         if (e.key === 'Enter') submitManualVoucher();
     });
 
-    // ==================== LIMPIEZA ====================
-    window.addEventListener('beforeunload', () => {
-        if (html5QrCode && isScanning) {
-            html5QrCode.stop().catch(console.log);
+    // ==================== LIMPIEZA AL SALIR ====================
+    window.addEventListener('beforeunload', async () => {
+        if (html5QrScanner && isScannerActive) {
+            try {
+                await html5QrScanner.stop();
+            } catch (e) {
+                console.log('Error al limpiar escáner:', e);
+            }
         }
     });
 
-    console.log('✅ Sistema listo - Modos: Escaneo QR y Voucher Manual');
+    // Verificar soporte de cámara al inicio
+    if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
+        logToDebug('⚠️ Este navegador no soporta acceso a cámara via WebRTC', 'warning');
+        showStatusMessage('⚠️ Tu navegador no soporta escáner QR. Usa el modo manual.', 'warning');
+        startBtn.disabled = true;
+    } else {
+        logToDebug('✅ WebRTC soportado, escáner disponible', 'success');
+    }
+
+    logToDebug('🚀 Sistema inicializado correctamente', 'success');
+    console.log('%c WiFi Premium v3.0 - Sistema depurado y listo', 'color: #3498db; font-size: 14px; font-weight: bold;');
 </script>
 </body>
 </html>
