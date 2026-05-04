@@ -3,14 +3,12 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
-    <title>WiFi Premium | Acceso Rápido</title>
-    <!-- Html5-QRCode Library -->
+    <title>WiFi Premium | Acceso por QR</title>
     <script src="https://cdn.jsdelivr.net/npm/html5-qrcode@2.3.8/html5-qrcode.min.js"></script>
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
-
         body {
-            font-family: 'Segoe UI', 'Roboto', sans-serif;
+            font-family: 'Segoe UI', sans-serif;
             background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
             min-height: 100vh;
             display: flex;
@@ -18,90 +16,73 @@
             align-items: center;
             padding: 20px;
         }
-
         .card {
-            background: rgba(255,255,255,0.98);
+            background: white;
             border-radius: 32px;
-            max-width: 550px;
+            max-width: 500px;
             width: 100%;
             overflow: hidden;
             box-shadow: 0 25px 50px -12px rgba(0,0,0,0.4);
         }
-
         .header {
             background: linear-gradient(135deg, #0f2027, #203a43, #2c5364);
             color: white;
             padding: 25px 20px;
             text-align: center;
         }
-
         .header h1 { font-size: 24px; display: flex; align-items: center; justify-content: center; gap: 10px; }
-        .header .badge { background: rgba(255,255,255,0.2); border-radius: 50px; padding: 4px 12px; font-size: 11px; margin-top: 8px; display: inline-block; }
-
         .content { padding: 24px; }
-
-        /* Panel de estado */
-        .status-panel {
-            background: #f8f9fa;
-            border-radius: 16px;
-            padding: 15px;
-            margin-bottom: 20px;
-            text-align: center;
-        }
-        .status-panel h4 { font-size: 14px; margin-bottom: 10px; }
-        .status-badge {
-            display: inline-block;
-            padding: 5px 12px;
-            border-radius: 50px;
-            font-size: 12px;
-            font-weight: bold;
-        }
-        .status-badge.success { background: #d4edda; color: #155724; }
-        .status-badge.warning { background: #fff3cd; color: #856404; }
-        .status-badge.error { background: #f8d7da; color: #721c24; }
-        .status-badge.info { background: #d1ecf1; color: #0c5460; }
-
         .scanner-area {
             background: #000;
             border-radius: 20px;
             overflow: hidden;
             margin: 15px 0;
             min-height: 300px;
+            position: relative;
         }
         #qr-reader { width: 100%; }
         #qr-reader video { width: 100% !important; height: auto !important; }
-
-        .button-group {
-            display: flex;
-            gap: 12px;
-            margin: 15px 0;
-        }
-        button {
-            flex: 1;
+        .btn {
+            width: 100%;
             padding: 14px;
             border: none;
             border-radius: 60px;
-            font-weight: 700;
+            font-weight: bold;
+            font-size: 16px;
             cursor: pointer;
-            transition: all 0.2s;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 8px;
+            margin: 8px 0;
         }
         .btn-primary { background: #007bff; color: white; }
-        .btn-primary:hover:not(:disabled) { background: #0056b3; transform: translateY(-1px); }
+        .btn-primary:hover:not(:disabled) { background: #0056b3; }
         .btn-secondary { background: #6c757d; color: white; }
+        .btn-secondary:hover:not(:disabled) { background: #545b62; }
+        .btn-success { background: #28a745; color: white; }
         button:disabled { opacity: 0.5; cursor: not-allowed; }
-
-        .manual-section { margin-top: 20px; padding-top: 15px; border-top: 1px solid #e0e0e0; }
-        .manual-toggle { text-align: center; }
-        .manual-toggle a { color: #007bff; text-decoration: none; font-size: 13px; cursor: pointer; }
+        .error-box {
+            background: #f8d7da;
+            color: #721c24;
+            padding: 12px;
+            border-radius: 12px;
+            margin: 10px 0;
+            text-align: center;
+            font-size: 13px;
+        }
+        .success-box {
+            background: #d4edda;
+            color: #155724;
+            padding: 12px;
+            border-radius: 12px;
+            margin: 10px 0;
+            text-align: center;
+            font-size: 13px;
+        }
+        .manual-link { text-align: center; margin: 15px 0; }
+        .manual-link a { color: #007bff; text-decoration: none; font-size: 14px; cursor: pointer; }
         .manual-form {
             background: #f8f9fa;
             border-radius: 16px;
             padding: 15px;
-            margin-top: 12px;
+            margin-top: 15px;
             display: none;
         }
         .manual-form.show { display: block; }
@@ -111,18 +92,15 @@
             border: 1px solid #ddd;
             border-radius: 50px;
             margin-bottom: 10px;
+            font-size: 14px;
         }
-        .manual-form button { width: 100%; }
-
         .footer {
             background: #f8f9fa;
-            padding: 12px;
+            padding: 15px;
             text-align: center;
             font-size: 11px;
             color: #888;
         }
-
-        /* Toast messages */
         .toast {
             position: fixed;
             bottom: 20px;
@@ -136,10 +114,9 @@
             z-index: 1000;
             opacity: 0;
             transition: opacity 0.3s;
+            pointer-events: none;
         }
         .toast.show { opacity: 1; }
-        .toast.success { background: #28a745; }
-        .toast.error { background: #dc3545; }
     </style>
 </head>
 <body>
@@ -147,324 +124,239 @@
 <div class="card">
     <div class="header">
         <h1><span>📶</span> WiFi Premium</h1>
-        <p>Autenticación por QR | GWN7630LR + MikroTik</p>
-        <div class="badge">⚡ Escanea el código QR de tu mesa</div>
+        <p>Escanea el código QR de tu mesa</p>
     </div>
 
     <div class="content">
-        <!-- Panel de estado - MUESTRA EN QUÉ SITUACIÓN ESTÁS -->
-        <div class="status-panel" id="statusPanel">
-            <h4>📡 Estado de conexión</h4>
-            <div id="statusDisplay">
-                <span class="status-badge info">🔍 Verificando...</span>
-            </div>
-            <p id="statusMessage" style="font-size: 12px; margin-top: 10px; color: #666;">Conectado a la red WiFi. Escanea el QR de tu mesa.</p>
+        <div id="statusMsg" class="success-box">
+            📡 Conectado. Haz clic en "Iniciar Escáner"
         </div>
 
         <div class="scanner-area">
             <div id="qr-reader"></div>
         </div>
 
-        <div class="button-group">
-            <button id="startBtn" class="btn-primary">📷 Iniciar Escáner</button>
-            <button id="stopBtn" class="btn-secondary" disabled>⏹️ Detener</button>
+        <button class="btn btn-primary" id="startBtn">📷 Iniciar Escáner</button>
+        <button class="btn btn-secondary" id="stopBtn" disabled>⏹️ Detener</button>
+
+        <div class="manual-link">
+            <a href="#" id="toggleManualBtn">✏️ ¿No funciona la cámara? Ingreso manual</a>
         </div>
 
-        <div class="manual-section">
-            <div class="manual-toggle">
-                <a id="toggleManualBtn">✏️ ¿No puedes escanear? Ingresa tus datos manualmente</a>
-            </div>
-            <div id="manualForm" class="manual-form">
-                <input type="text" id="manualUser" placeholder="Usuario (ej: mesa01)" autocomplete="off">
-                <input type="password" id="manualPass" placeholder="Contraseña">
-                <button id="submitManualBtn" class="btn-primary">✅ Conectarse</button>
-            </div>
+        <div id="manualForm" class="manual-form">
+            <input type="text" id="manualUser" placeholder="Usuario (ej: mesa01)">
+            <input type="password" id="manualPass" placeholder="Contraseña (ej: 1234)">
+            <button class="btn btn-success" id="submitManualBtn">Conectarse</button>
         </div>
     </div>
 
     <div class="footer">
-        🔒 Sistema seguro | Soporte técnico
+        🔒 Sistema de autenticación por QR | Soporte 24/7
     </div>
 </div>
 
 <div id="toast" class="toast"></div>
 
 <script>
-    // ==================== TOAST NOTIFICACIONES ====================
-    function showToast(message, type = 'info') {
+    function showToast(msg, isError = false) {
         const toast = document.getElementById('toast');
-        toast.textContent = message;
-        toast.className = `toast show ${type}`;
-        setTimeout(() => {
-            toast.classList.remove('show');
-        }, 3000);
+        toast.textContent = msg;
+        toast.style.background = isError ? '#dc3545' : '#333';
+        toast.classList.add('show');
+        setTimeout(() => toast.classList.remove('show'), 3000);
+        console.log(msg);
     }
 
-    // ==================== CAPTURA PARÁMETROS DEL PORTAL ====================
-    // OBTENER TODOS LOS PARÁMETROS DE LA URL
+    function updateStatus(msg, isError = false) {
+        const statusDiv = document.getElementById('statusMsg');
+        statusDiv.textContent = msg;
+        statusDiv.className = isError ? 'error-box' : 'success-box';
+    }
+
+    // Verificar si estamos en HTTPS
+    if (window.location.protocol !== 'https:') {
+        updateStatus('⚠️ HTTPS requerido para la cámara. Usa https://', true);
+        showToast('⚠️ La cámara requiere HTTPS', true);
+    }
+
+    // Capturar parámetros de MikroTik
     const urlParams = new URLSearchParams(window.location.search);
+    const loginUrl = urlParams.get('link-login');
+    const mac = urlParams.get('mac');
     
-    // Buscar parámetros en MÚLTIPLES FORMATOS (MikroTik, Grandstream, etc)
-    let ap_url = null;
-    let ap_token = null;
-    
-    // Formato 1: Grandstream (base_grant_url, grant_token)
-    if (urlParams.has('base_grant_url') && urlParams.has('grant_token')) {
-        ap_url = urlParams.get('base_grant_url');
-        ap_token = urlParams.get('grant_token');
-        console.log('✅ Formato Grandstream detectado');
-        showToast('✅ Portal cautivo detectado (Grandstream)', 'success');
+    if (loginUrl) {
+        localStorage.setItem('mikrotik_login', loginUrl);
+        localStorage.setItem('mikrotik_mac', mac);
+        updateStatus('✅ Portal detectado. Escanea tu QR.');
+        showToast('✅ Portal detectado');
     }
-    // Formato 2: MikroTik puro (link-login)
-    else if (urlParams.has('link-login')) {
-        ap_url = urlParams.get('link-login');
-        ap_token = urlParams.get('mac') || 'no-token';
-        console.log('✅ Formato MikroTik detectado');
-        showToast('✅ Portal cautivo detectado (MikroTik)', 'success');
-    }
-    // Formato 3: Parámetros alternativos
-    else if (urlParams.has('u') && urlParams.has('p')) {
-        // Ya tiene usuario y contraseña en URL, autenticar directamente
-        console.log('🔑 Autenticación directa detectada');
-        const directUser = urlParams.get('u');
-        const directPass = urlParams.get('p');
-        showToast(`🔑 Autenticando como ${directUser}...`, 'info');
-        setTimeout(() => {
-            authenticateVoucher(directUser, directPass);
-        }, 500);
-        ap_url = localStorage.getItem('gw_url'); // Intentar recuperar URL guardada
-    }
-    
-    // Guardar en localStorage SIEMPRE que se detecte
-    if (ap_url && ap_token) {
-        localStorage.setItem('gw_url', ap_url);
-        localStorage.setItem('gw_token', ap_token);
-        console.log('💾 Datos guardados:', { ap_url, ap_token });
+
+    // Autenticación
+    function authenticate(username, password) {
+        let loginBase = localStorage.getItem('mikrotik_login');
+        if (!loginBase) loginBase = 'http://192.168.88.1/login';
         
-        // Actualizar panel de estado
-        document.getElementById('statusDisplay').innerHTML = '<span class="status-badge success">✅ Portal detectado</span>';
-        document.getElementById('statusMessage').innerHTML = 'Portal cautivo detectado. Escanea el QR de tu mesa para conectarte.';
-    } 
-    // Si NO hay portal detectado pero estamos en una red WiFi normal
-    else {
-        console.log('⚠️ No se detectaron parámetros de portal cautivo');
-        
-        // Verificar si estamos en una red que podría tener portal
-        // Por ahora, permitir continuar de todas formas
-        document.getElementById('statusDisplay').innerHTML = '<span class="status-badge warning">⚠️ Verificando</span>';
-        document.getElementById('statusMessage').innerHTML = 'Escanea el QR de tu mesa. Si tienes problemas, usa el acceso manual.';
-        showToast('ℹ️ Escanea el QR para conectarte', 'info');
-    }
-    
-    // Verificar si hay datos guardados previamente
-    const savedUrl = localStorage.getItem('gw_url');
-    const savedToken = localStorage.getItem('gw_token');
-    if (savedUrl && savedToken && !ap_url) {
-        console.log('📦 Usando datos guardados previamente');
-        showToast('📦 Usando configuración previa', 'info');
-    }
-    
-    // ==================== AUTENTICACIÓN ====================
-    function authenticateVoucher(username, password) {
-        // Priorizar URL recién capturada, luego la guardada
-        let targetUrl = ap_url || localStorage.getItem('gw_url');
-        let targetToken = ap_token || localStorage.getItem('gw_token');
-        
-        // Si no hay URL, intentar redirigir a la página de login estándar
-        if (!targetUrl) {
-            console.warn('⚠️ No hay URL de portal guardada');
-            showToast('⚠️ Conéctate al WiFi del local primero', 'error');
-            
-            // Mostrar opción manual con mensaje claro
-            document.getElementById('statusDisplay').innerHTML = '<span class="status-badge error">❌ Sin portal</span>';
-            document.getElementById('statusMessage').innerHTML = 'Conéctate a la red WiFi "Premium" primero, luego escanea el QR.';
-            return false;
-        }
-        
-        console.log('🔐 Autenticando:', { username, targetUrl });
-        showToast(`🔄 Validando ${username}...`, 'info');
-        
-        // Construir URL de redirección
-        let redirectUrl;
-        if (targetUrl.includes('?')) {
-            redirectUrl = `${targetUrl}&token=${encodeURIComponent(targetToken)}&username=${encodeURIComponent(username)}&password=${encodeURIComponent(password)}`;
-        } else {
-            redirectUrl = `${targetUrl}?token=${encodeURIComponent(targetToken)}&username=${encodeURIComponent(username)}&password=${encodeURIComponent(password)}`;
-        }
-        
-        // También soportar formato MikroTik puro
-        if (targetUrl.includes('link-login')) {
-            redirectUrl = `${targetUrl}&username=${encodeURIComponent(username)}&password=${encodeURIComponent(password)}`;
-        }
-        
-        console.log('🚀 Redirigiendo a:', redirectUrl);
+        const redirectUrl = `${loginBase}?username=${encodeURIComponent(username)}&password=${encodeURIComponent(password)}`;
+        showToast(`✅ Conectando como ${username}...`);
         
         setTimeout(() => {
-            showToast(`✅ Acceso concedido a ${username}`, 'success');
-            setTimeout(() => {
-                window.location.href = redirectUrl;
-            }, 500);
+            window.location.href = redirectUrl;
         }, 500);
-        
-        return true;
     }
-    
-    // ==================== ESCÁNER QR ====================
-    let html5QrCode = null;
-    let isScanning = false;
-    
+
+    // ==================== ESCÁNER QR MEJORADO ====================
+    let scanner = null;
+    let scanning = false;
+
     async function startScanner() {
-        if (isScanning) {
-            showToast('⚠️ Escáner ya activo', 'warning');
+        if (scanning) {
+            showToast('⚠️ Escáner ya activo');
             return;
         }
-        
+
+        // Verificar soporte de cámara
+        if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
+            updateStatus('❌ Tu navegador no soporta cámara. Usa el ingreso manual.', true);
+            showToast('❌ Navegador no compatible con cámara', true);
+            return;
+        }
+
+        updateStatus('📷 Solicitando permiso de cámara...');
+        showToast('📷 Permite el acceso a la cámara');
+
         try {
-            showToast('📷 Iniciando cámara...', 'info');
+            scanner = new Html5Qrcode("qr-reader");
             
-            html5QrCode = new Html5Qrcode("qr-reader");
+            // Obtener cámaras disponibles
             const cameras = await Html5Qrcode.getCameras();
             
             if (!cameras || cameras.length === 0) {
                 throw new Error('No se encontraron cámaras');
             }
             
-            // Seleccionar cámara trasera
-            let selectedCamera = cameras[0];
+            // Seleccionar cámara trasera si existe
+            let cameraId = cameras[0].id;
             for (const cam of cameras) {
                 if (cam.label.toLowerCase().includes('back') || 
-                    cam.label.toLowerCase().includes('environment')) {
-                    selectedCamera = cam;
+                    cam.label.toLowerCase().includes('environment') ||
+                    cam.label.toLowerCase().includes('trasera')) {
+                    cameraId = cam.id;
                     break;
                 }
             }
             
-            await html5QrCode.start(
-                { deviceId: selectedCamera.id },
-                { fps: 10, qrbox: { width: 280, height: 280 } },
-                onScanSuccess,
+            updateStatus('📷 Escaneando... Apunta al QR');
+            
+            await scanner.start(
+                cameraId,
+                { fps: 10, qrbox: { width: 250, height: 250 } },
+                (decodedText) => {
+                    console.log('✅ QR detectado:', decodedText);
+                    stopScanner();
+                    
+                    let user = null, pass = null;
+                    
+                    // Extraer usuario y contraseña del QR
+                    if (decodedText.includes('?')) {
+                        const qrParams = new URLSearchParams(decodedText.split('?')[1]);
+                        user = qrParams.get('u');
+                        pass = qrParams.get('p');
+                    } else if (decodedText.includes('&')) {
+                        const qrParams = new URLSearchParams(decodedText);
+                        user = qrParams.get('u');
+                        pass = qrParams.get('p');
+                    } else if (decodedText.includes(':')) {
+                        const parts = decodedText.split(':');
+                        user = parts[0];
+                        pass = parts[1];
+                    } else if (decodedText.includes(',')) {
+                        const parts = decodedText.split(',');
+                        user = parts[0];
+                        pass = parts[1];
+                    }
+                    
+                    if (user && pass) {
+                        updateStatus(`✅ QR válido: ${user}`);
+                        showToast(`✅ Conectando como ${user}`);
+                        authenticate(user, pass);
+                    } else {
+                        updateStatus('❌ QR inválido - Formato incorrecto', true);
+                        showToast('❌ QR debe contener u=usuario&p=clave', true);
+                    }
+                },
                 (error) => {
-                    // Ignorar errores de "no QR"
+                    // Solo mostrar errores importantes (no "no se encontró QR")
                     if (error && (error.includes('Permission') || error.includes('NotAllowed'))) {
-                        showToast('🔒 Permiso de cámara denegado', 'error');
+                        updateStatus('❌ Permiso de cámara denegado', true);
+                        showToast('❌ Permiso de cámara denegado', true);
                         stopScanner();
                     }
                 }
             );
             
-            isScanning = true;
+            scanning = true;
             document.getElementById('startBtn').disabled = true;
             document.getElementById('stopBtn').disabled = false;
-            showToast('✅ Escáner listo. Apunta al QR.', 'success');
             
         } catch (err) {
-            console.error('Error:', err);
-            showToast('❌ Error: No se pudo acceder a la cámara', 'error');
+            console.error('Error al iniciar escáner:', err);
+            updateStatus(`❌ Error: ${err.message}. Usa el ingreso manual.`, true);
+            showToast(`❌ Error de cámara: ${err.message}`, true);
+            document.getElementById('startBtn').disabled = false;
+            document.getElementById('stopBtn').disabled = true;
         }
     }
-    
+
     async function stopScanner() {
-        if (html5QrCode && isScanning) {
+        if (scanner && scanning) {
             try {
-                await html5QrCode.stop();
-                isScanning = false;
+                await scanner.stop();
+                scanning = false;
                 document.getElementById('startBtn').disabled = false;
                 document.getElementById('stopBtn').disabled = true;
-                showToast('⏹️ Escáner detenido', 'info');
-            } catch (err) {}
+                updateStatus('📡 Escáner detenido');
+                showToast('⏹️ Escáner detenido');
+            } catch (err) {
+                console.error('Error al detener:', err);
+            }
         }
     }
-    
-    function onScanSuccess(decodedText) {
-        console.log('📱 QR escaneado:', decodedText);
-        showToast('📱 QR detectado, procesando...', 'info');
-        
-        if (isScanning) stopScanner();
-        
-        let username = null;
-        let password = null;
-        
-        try {
-            // Método 1: ?u=usuario&p=clave
-            if (decodedText.includes('?')) {
-                const qrParams = new URLSearchParams(decodedText.split('?')[1]);
-                username = qrParams.get('u');
-                password = qrParams.get('p');
-            }
-            // Método 2: u=usuario&p=clave directo
-            else if (decodedText.includes('&')) {
-                const qrParams = new URLSearchParams(decodedText);
-                username = qrParams.get('u');
-                password = qrParams.get('p');
-            }
-            // Método 3: usuario:contraseña
-            else if (decodedText.includes(':')) {
-                const parts = decodedText.split(':');
-                username = parts[0];
-                password = parts[1];
-            }
-            // Método 4: usuario,contraseña
-            else if (decodedText.includes(',')) {
-                const parts = decodedText.split(',');
-                username = parts[0];
-                password = parts[1];
-            }
-            
-            if (username && password) {
-                showToast(`✅ Usuario: ${username}`, 'success');
-                authenticateVoucher(username, password);
-            } else {
-                showToast('❌ QR inválido: No contiene usuario/contraseña', 'error');
-                console.error('Contenido del QR:', decodedText);
-            }
-        } catch (e) {
-            console.error('Error parseando QR:', e);
-            showToast('❌ Error al procesar el QR', 'error');
-        }
-    }
-    
+
     // ==================== MODO MANUAL ====================
-    function toggleManualMode() {
-        const manualForm = document.getElementById('manualForm');
-        manualForm.classList.toggle('show');
-    }
-    
-    function submitManual() {
-        const username = document.getElementById('manualUser').value.trim();
-        const password = document.getElementById('manualPass').value.trim();
-        
-        if (!username || !password) {
-            showToast('⚠️ Ingresa usuario y contraseña', 'warning');
-            return;
-        }
-        
-        authenticateVoucher(username, password);
-    }
-    
-    // ==================== EVENTOS ====================
-    document.getElementById('startBtn').addEventListener('click', startScanner);
-    document.getElementById('stopBtn').addEventListener('click', stopScanner);
-    document.getElementById('toggleManualBtn').addEventListener('click', toggleManualMode);
-    document.getElementById('submitManualBtn').addEventListener('click', submitManual);
-    
-    document.getElementById('manualUser').addEventListener('keypress', (e) => {
+    let manualVisible = false;
+    document.getElementById('toggleManualBtn').onclick = () => {
+        manualVisible = !manualVisible;
+        document.getElementById('manualForm').classList.toggle('show', manualVisible);
+        if (manualVisible && scanning) stopScanner();
+    };
+
+    document.getElementById('submitManualBtn').onclick = () => {
+        const user = document.getElementById('manualUser').value.trim();
+        const pass = document.getElementById('manualPass').value.trim();
+        if (user && pass) authenticate(user, pass);
+        else showToast('⚠️ Ingresa usuario y contraseña', true);
+    };
+
+    document.getElementById('startBtn').onclick = startScanner;
+    document.getElementById('stopBtn').onclick = stopScanner;
+
+    // Enter en inputs
+    document.getElementById('manualUser').onkeypress = (e) => {
         if (e.key === 'Enter') document.getElementById('manualPass').focus();
-    });
-    document.getElementById('manualPass').addEventListener('keypress', (e) => {
-        if (e.key === 'Enter') submitManual();
-    });
-    
-    // Limpiar al salir
-    window.addEventListener('beforeunload', async () => {
-        if (html5QrCode && isScanning) {
-            try { await html5QrCode.stop(); } catch(e) {}
-        }
-    });
-    
-    console.log('🚀 App lista');
-    console.log('URL actual:', window.location.href);
-    console.log('Parámetros:', Object.fromEntries(urlParams));
-    console.log('LocalStorage:', { url: localStorage.getItem('gw_url'), token: localStorage.getItem('gw_token') });
+    };
+    document.getElementById('manualPass').onkeypress = (e) => {
+        if (e.key === 'Enter') document.getElementById('submitManualBtn').click();
+    };
+
+    // Verificar si hay usuario en URL
+    const urlUser = urlParams.get('u');
+    const urlPass = urlParams.get('p');
+    if (urlUser && urlPass) {
+        showToast(`🔑 Autenticando ${urlUser}...`);
+        setTimeout(() => authenticate(urlUser, urlPass), 1000);
+    }
+
+    showToast('🎯 Haz clic en "Iniciar Escáner"');
 </script>
 </body>
 </html>
