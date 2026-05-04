@@ -3,8 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
-    <title>WiFi Premium | Acceso por QR</title>
-    <!-- Html5-QRCode Library CDN correcta -->
+    <title>WiFi Premium | Autenticación por QR</title>
+    <!-- Html5-QRCode Library -->
     <script src="https://cdn.jsdelivr.net/npm/html5-qrcode@2.3.8/html5-qrcode.min.js"></script>
     <style>
         * {
@@ -14,7 +14,7 @@
         }
 
         body {
-            font-family: 'Segoe UI', Roboto, 'Helvetica Neue', sans-serif;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             min-height: 100vh;
             display: flex;
@@ -23,86 +23,62 @@
             padding: 20px;
         }
 
-        /* Main card */
-        .container {
+        .card {
             background: white;
-            width: 100%;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
             max-width: 500px;
-            border-radius: 28px;
-            box-shadow: 0 25px 45px -12px rgba(0,0,0,0.3);
+            width: 100%;
             overflow: hidden;
-            animation: fadeIn 0.4s ease;
+            animation: fadeIn 0.5s ease;
         }
 
         @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(20px); }
+            from { opacity: 0; transform: translateY(-20px); }
             to { opacity: 1; transform: translateY(0); }
         }
 
-        /* Header */
         .header {
-            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
-            padding: 25px 20px;
-            text-align: center;
+            background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
             color: white;
+            padding: 30px 20px;
+            text-align: center;
         }
 
-        .logo {
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            gap: 12px;
-            font-size: 26px;
-            font-weight: bold;
-            margin-bottom: 10px;
-        }
-
-        .logo svg {
-            filter: drop-shadow(0 2px 4px rgba(0,0,0,0.2));
-        }
-
-        .subtitle {
-            font-size: 13px;
-            opacity: 0.85;
-            margin-top: 5px;
-        }
-
-        /* Content */
-        .content {
-            padding: 24px;
-        }
-
-        .info-card {
-            background: #f0f7ff;
-            border-radius: 16px;
-            padding: 16px;
-            margin-bottom: 20px;
-            border-left: 4px solid #007bff;
-        }
-
-        .info-card h3 {
-            color: #1a1a2e;
-            font-size: 18px;
+        .header h1 {
+            font-size: 24px;
             margin-bottom: 8px;
-            display: flex;
-            align-items: center;
-            gap: 8px;
         }
 
-        .info-card p {
-            color: #555;
+        .header p {
             font-size: 14px;
-            line-height: 1.5;
+            opacity: 0.9;
         }
 
-        /* QR Scanner */
-        .scanner-area {
+        .content {
+            padding: 25px;
+        }
+
+        .info-box {
+            background: #f0f7ff;
+            border-left: 4px solid #3498db;
+            padding: 15px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+        }
+
+        .info-box p {
+            color: #555;
+            line-height: 1.5;
+            font-size: 14px;
+        }
+
+        .qr-container {
             background: #000;
-            border-radius: 20px;
+            border-radius: 15px;
             overflow: hidden;
             margin: 15px 0;
             position: relative;
-            min-height: 300px;
         }
 
         #qr-reader {
@@ -114,14 +90,13 @@
             padding: 10px;
         }
 
-        /* Botones */
         .button-group {
             display: flex;
-            gap: 12px;
+            gap: 10px;
             margin: 15px 0;
         }
 
-        .btn {
+        button {
             flex: 1;
             padding: 12px;
             border: none;
@@ -129,7 +104,7 @@
             font-size: 14px;
             font-weight: 600;
             cursor: pointer;
-            transition: all 0.2s;
+            transition: all 0.3s ease;
             display: flex;
             align-items: center;
             justify-content: center;
@@ -137,57 +112,56 @@
         }
 
         .btn-primary {
-            background: #007bff;
+            background: #3498db;
             color: white;
-            box-shadow: 0 4px 12px rgba(0,123,255,0.3);
+            box-shadow: 0 4px 12px rgba(52,152,219,0.3);
         }
 
         .btn-primary:hover:not(:disabled) {
-            background: #0056b3;
-            transform: translateY(-1px);
+            background: #2980b9;
+            transform: translateY(-2px);
         }
 
         .btn-secondary {
-            background: #6c757d;
+            background: #95a5a6;
             color: white;
         }
 
         .btn-secondary:hover:not(:disabled) {
-            background: #545b62;
+            background: #7f8c8d;
         }
 
         .btn-outline {
             background: white;
-            color: #007bff;
-            border: 2px solid #007bff;
+            color: #3498db;
+            border: 2px solid #3498db;
         }
 
         .btn-outline:hover {
-            background: #007bff;
+            background: #3498db;
             color: white;
         }
 
-        .btn:disabled {
+        button:disabled {
             opacity: 0.5;
             cursor: not-allowed;
         }
 
-        /* Estado de carga */
-        .loading-spinner {
+        .loader {
             display: inline-block;
-            width: 16px;
-            height: 16px;
-            border: 2px solid rgba(255,255,255,0.3);
+            width: 20px;
+            height: 20px;
+            border: 3px solid #f3f3f3;
+            border-top: 3px solid #3498db;
             border-radius: 50%;
-            border-top-color: white;
-            animation: spin 0.6s linear infinite;
+            animation: spin 1s linear infinite;
         }
 
         @keyframes spin {
-            to { transform: rotate(360deg); }
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
         }
 
-        /* Modo manual */
         .manual-section {
             margin-top: 20px;
             padding-top: 15px;
@@ -200,15 +174,16 @@
         }
 
         .manual-link a {
-            color: #007bff;
+            color: #3498db;
             text-decoration: none;
             cursor: pointer;
+            font-weight: 600;
         }
 
         .manual-panel {
             background: #f8f9fa;
-            border-radius: 16px;
-            padding: 16px;
+            border-radius: 12px;
+            padding: 15px;
             margin-top: 12px;
             display: none;
         }
@@ -233,105 +208,100 @@
             text-align: center;
         }
 
-        /* Footer */
+        .status-message {
+            margin-top: 15px;
+            padding: 10px;
+            border-radius: 10px;
+            font-size: 13px;
+            text-align: center;
+            display: none;
+        }
+
+        .status-message.show {
+            display: block;
+        }
+
+        .status-message.info {
+            background: #d1ecf1;
+            color: #0c5460;
+            border: 1px solid #bee5eb;
+        }
+
+        .status-message.success {
+            background: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+
+        .status-message.error {
+            background: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+
         .footer {
             background: #f8f9fa;
             padding: 15px;
             text-align: center;
             font-size: 11px;
             color: #888;
-        }
-
-        /* Toast */
-        .toast {
-            position: fixed;
-            bottom: 20px;
-            left: 50%;
-            transform: translateX(-50%);
-            background: #333;
-            color: white;
-            padding: 10px 20px;
-            border-radius: 50px;
-            font-size: 13px;
-            z-index: 1000;
-            opacity: 0;
-            transition: opacity 0.3s;
-            pointer-events: none;
-        }
-
-        .toast.show {
-            opacity: 1;
-        }
-
-        .toast.error {
-            background: #dc3545;
-        }
-
-        .toast.success {
-            background: #28a745;
+            border-top: 1px solid #e0e0e0;
         }
     </style>
 </head>
 <body>
 
-<div class="container">
+<div class="card">
     <div class="header">
-        <div class="logo">
-            <svg width="28" height="28" viewBox="0 0 24 24" fill="currentColor">
-                <path d="M12 21l-12-18h24z"/>
-                <circle cx="12" cy="18" r="2" fill="white"/>
-            </svg>
-            <span>WiFi Premium</span>
-        </div>
-        <div class="subtitle">Acceso ultrarrápido | GWN7630LR & MikroTik</div>
+        <h1>🎯 WiFi de Cortesía</h1>
+        <p>Acceso ultrarrápido • GWN7630LR & MikroTik</p>
     </div>
 
     <div class="content">
-        <div class="info-card">
-            <h3>
-                <span>📱</span> Paso final
-            </h3>
-            <p id="infoText">Escanea el código QR que se encuentra en tu mesa o ticket para activar tu conexión a internet.</p>
+        <div class="info-box">
+            <p id="messageText">📱 Escanea el código QR de tu ticket o voucher para navegar gratis.</p>
         </div>
 
         <!-- Área del escáner QR -->
-        <div class="scanner-area">
+        <div class="qr-container">
             <div id="qr-reader"></div>
         </div>
 
         <!-- Botones de control -->
         <div class="button-group">
-            <button class="btn btn-primary" id="startBtn">
-                ▶️ Iniciar escáner
+            <button class="btn-primary" id="startBtn">
+                📷 Iniciar escáner
             </button>
-            <button class="btn btn-secondary" id="stopBtn" disabled>
+            <button class="btn-secondary" id="stopBtn" disabled>
                 ⏹️ Detener
             </button>
         </div>
 
+        <!-- Mensaje de estado -->
+        <div id="statusMessage" class="status-message"></div>
+
         <!-- Modo manual de respaldo -->
         <div class="manual-section">
             <div class="manual-link">
-                🔍 <a id="showManualBtn">¿No funciona la cámara? Acceso manual aquí</a>
+                🔑 <a id="showManualBtn">¿No puedes escanear? Ingresa tu voucher manualmente</a>
             </div>
             <div class="manual-panel" id="manualPanel">
-                <input type="text" id="manualCode" placeholder="Ingresa el código de tu ticket/mesa" autocomplete="off">
-                <button class="btn btn-outline" id="submitManualBtn" style="width: 100%;">
-                    ✅ Validar acceso
+                <input type="text" id="voucherUser" placeholder="Usuario del voucher" autocomplete="off">
+                <input type="text" id="voucherPass" placeholder="Contraseña del voucher" autocomplete="off">
+                <button class="btn-outline" id="submitManualBtn" style="width: 100%;">
+                    ✅ Autenticar
                 </button>
             </div>
         </div>
     </div>
 
     <div class="footer">
-        Sistema de autenticación seguro | Escanea el QR para conectarte
+        🔒 Sistema seguro de autenticación por voucher | Soporte 24/7
     </div>
 </div>
 
-<div id="toast" class="toast"></div>
-
 <script>
-    // Variables globales
+    // ==================== VARIABLES GLOBALES ====================
     let html5QrCode = null;
     let isScanning = false;
 
@@ -341,60 +311,72 @@
     const showManualBtn = document.getElementById('showManualBtn');
     const manualPanel = document.getElementById('manualPanel');
     const submitManualBtn = document.getElementById('submitManualBtn');
-    const manualCodeInput = document.getElementById('manualCode');
-    const infoText = document.getElementById('infoText');
+    const voucherUser = document.getElementById('voucherUser');
+    const voucherPass = document.getElementById('voucherPass');
+    const messageText = document.getElementById('messageText');
+    const statusMessageDiv = document.getElementById('statusMessage');
 
-    // Obtener parámetros de URL
-    const urlParams = new URLSearchParams(window.location.search);
-    const grant_url = urlParams.get('base_grant_url');
-    const grant_token = urlParams.get('grant_token');
-
-    // Guardar credenciales del AP si existen
-    if (grant_url && grant_token) {
-        localStorage.setItem('ap_wifi_url', grant_url);
-        localStorage.setItem('ap_wifi_token', grant_token);
-        console.log('✅ Credenciales del AP guardadas');
+    // ==================== CAPTURA DATOS DEL AP (Grandstream/MikroTik) ====================
+    const params = new URLSearchParams(window.location.search);
+    
+    // 1. Capturar datos del AP (se ejecuta al conectar al Wi-Fi)
+    const ap_url = params.get('base_grant_url');
+    const ap_token = params.get('grant_token');
+    
+    if (ap_url && ap_token) {
+        localStorage.setItem('ap_wifi_url', ap_url);
+        localStorage.setItem('ap_wifi_token', ap_token);
+        console.log('✅ Datos del AP guardados:', ap_url);
+        showStatus('✅ Configuración de red detectada', 'success');
     }
 
-    // Función para mostrar mensajes toast
-    function showToast(message, type = 'info') {
-        const toast = document.getElementById('toast');
-        toast.textContent = message;
-        toast.className = 'toast show';
-        if (type === 'error') toast.classList.add('error');
-        if (type === 'success') toast.classList.add('success');
+    // 2. Capturar datos del Voucher por URL (parámetros u y p)
+    const voucherUserParam = params.get('u');
+    const voucherPassParam = params.get('p');
+    
+    if (voucherUserParam && voucherPassParam) {
+        // Validar automáticamente el voucher si viene en la URL
+        showStatus('🔄 Validando voucher automáticamente...', 'info');
+        authenticateVoucher(voucherUserParam, voucherPassParam);
+    }
+
+    // ==================== FUNCIONES PRINCIPALES ====================
+    
+    // Función para mostrar mensajes de estado
+    function showStatus(message, type = 'info') {
+        statusMessageDiv.textContent = message;
+        statusMessageDiv.className = `status-message show ${type}`;
         setTimeout(() => {
-            toast.classList.remove('show');
-            toast.className = 'toast';
-        }, 3000);
+            if (statusMessageDiv.className.includes('show')) {
+                statusMessageDiv.classList.remove('show');
+            }
+        }, 4000);
     }
 
-    // Función para validar y redirigir
-    function validateAndConnect(token) {
-        const storedUrl = localStorage.getItem('ap_wifi_url');
-        const storedToken = localStorage.getItem('ap_wifi_token');
-        
-        // Priorizar token pasado como parámetro
-        const finalToken = token || storedToken;
-        const finalUrl = storedUrl;
+    // Función para autenticar el voucher contra el Grandstream
+    function authenticateVoucher(username, password) {
+        const savedUrl = localStorage.getItem('ap_wifi_url');
+        const savedToken = localStorage.getItem('ap_wifi_token');
 
-        if (!finalUrl || !finalToken) {
-            showToast('❌ Error: No se detectó la red WiFi. Conéctate a la red del local.', 'error');
-            infoText.innerHTML = '⚠️ <strong>Error de conexión:</strong> Asegúrate de estar conectado a la red WiFi del establecimiento antes de escanear.';
+        if (!savedUrl || !savedToken) {
+            showStatus('❌ Error: Conéctate primero a la red WiFi del local', 'error');
+            messageText.innerHTML = '⚠️ <strong>Error:</strong> Por favor, conectate a la red WiFi antes de escanear el QR.';
             return false;
         }
 
-        // Mostrar estado de validación
-        infoText.innerHTML = '🔄 <strong>Validando acceso...</strong> Conectando con el servidor, por favor espera.';
+        // Mostrar loader en el botón si está disponible
+        messageText.innerHTML = '🔄 <strong>Validando voucher...</strong> Conectando con el servidor...';
+        showStatus('Validando credenciales...', 'info');
+
+        // Construir URL de redirección con usuario y contraseña
+        let redirectUrl = `${savedUrl}?token=${savedToken}&username=${encodeURIComponent(username)}&password=${encodeURIComponent(password)}`;
         
-        // Construir URL de redirección
-        let redirectUrl = `${finalUrl}?token=${encodeURIComponent(finalToken)}&continue=https://www.google.com`;
-        
-        if (finalUrl.includes('?')) {
-            redirectUrl = `${finalUrl}&token=${encodeURIComponent(finalToken)}&continue=https://www.google.com`;
+        // Si ya tiene parámetros, ajustar
+        if (savedUrl.includes('?')) {
+            redirectUrl = `${savedUrl}&token=${savedToken}&username=${encodeURIComponent(username)}&password=${encodeURIComponent(password)}`;
         }
 
-        // Pequeño delay para feedback visual
+        // Delay para feedback visual antes de redirigir
         setTimeout(() => {
             window.location.href = redirectUrl;
         }, 1500);
@@ -402,10 +384,11 @@
         return true;
     }
 
-    // Función para iniciar el escáner QR
+    // ==================== ESCÁNER QR ====================
+    
     async function startScanner() {
         if (isScanning) {
-            showToast('El escáner ya está activo', 'info');
+            showStatus('El escáner ya está activo', 'info');
             return;
         }
 
@@ -413,44 +396,48 @@
             // Crear instancia del lector QR
             html5QrCode = new Html5Qrcode("qr-reader");
             
-            // Configuración optimizada
+            // Obtener cámaras disponibles
+            const devices = await Html5Qrcode.getCameras();
+            
+            if (!devices || devices.length === 0) {
+                throw new Error('No se encontraron cámaras');
+            }
+            
+            // Seleccionar cámara trasera si existe
+            let cameraId = devices[0].id;
+            const backCamera = devices.find(device => 
+                device.label.toLowerCase().includes('back') || 
+                device.label.toLowerCase().includes('environment') ||
+                device.label.toLowerCase().includes('trasera')
+            );
+            
+            if (backCamera) {
+                cameraId = backCamera.id;
+            }
+            
+            // Configuración del escáner
             const config = {
                 fps: 10,
                 qrbox: { width: 250, height: 250 },
-                aspectRatio: 1.0,
-                disableFlip: false
+                aspectRatio: 1.0
             };
-
-            // Intentar iniciar con cámara trasera (environment)
-            const devices = await Html5Qrcode.getCameras();
             
-            if (devices && devices.length) {
-                let cameraId = devices[0].id;
-                // Buscar cámara trasera si existe
-                const backCamera = devices.find(device => device.label.toLowerCase().includes('back') || device.label.toLowerCase().includes('environment'));
-                if (backCamera) {
-                    cameraId = backCamera.id;
-                }
-                
-                await html5QrCode.start(cameraId, config, onScanSuccess, onScanError);
-                isScanning = true;
-                startBtn.disabled = true;
-                stopBtn.disabled = false;
-                showToast('📷 Escáner activado - Apunta al código QR', 'success');
-                infoText.innerHTML = '📸 <strong>Escáner activo:</strong> Enfoca el código QR que está en tu mesa o ticket.';
-            } else {
-                throw new Error('No se encontraron cámaras');
-            }
+            await html5QrCode.start(cameraId, config, onQRCodeSuccess, onQRCodeError);
+            isScanning = true;
+            startBtn.disabled = true;
+            stopBtn.disabled = false;
+            showStatus('📷 Escáner activado - Apunta al código QR de tu ticket', 'success');
+            messageText.innerHTML = '📸 <strong>Escáner activo:</strong> Enfoca el código QR que está en tu ticket o voucher.';
+            
         } catch (err) {
             console.error('Error al iniciar escáner:', err);
-            showToast('❌ No se pudo acceder a la cámara. Usa el acceso manual.', 'error');
-            infoText.innerHTML = '⚠️ <strong>No se detectó cámara:</strong> Usa el enlace "Acceso manual" para ingresar tu código.';
+            showStatus('❌ No se pudo acceder a la cámara. Usa el acceso manual.', 'error');
             startBtn.disabled = false;
             stopBtn.disabled = true;
+            messageText.innerHTML = '⚠️ <strong>No se detectó cámara:</strong> Usa el enlace "Ingresa tu voucher manualmente" para conectarte.';
         }
     }
 
-    // Función para detener el escáner
     async function stopScanner() {
         if (html5QrCode && isScanning) {
             try {
@@ -458,94 +445,110 @@
                 isScanning = false;
                 startBtn.disabled = false;
                 stopBtn.disabled = true;
-                showToast('⏹️ Escáner detenido', 'info');
-                infoText.innerHTML = '📱 Escanea el código QR que se encuentra en tu mesa o ticket para activar tu conexión.';
+                showStatus('⏹️ Escáner detenido', 'info');
+                messageText.innerHTML = '📱 Escanea el código QR de tu ticket o voucher para navegar gratis.';
             } catch (err) {
-                console.error('Error al detener:', err);
+                console.error('Error al detener escáner:', err);
             }
         }
     }
 
     // Callback cuando se escanea un QR exitosamente
-    function onScanSuccess(decodedText, decodedResult) {
+    function onQRCodeSuccess(decodedText, decodedResult) {
         console.log('✅ QR escaneado:', decodedText);
         
-        // Detener el escáner automáticamente
+        // Detener el escáner
         stopScanner();
         
-        // Mostrar mensaje de éxito
-        showToast('✅ Código QR detectado. Validando acceso...', 'success');
-        
-        // Validar el código escaneado
-        validateAndConnect(decodedText);
+        // Intentar parsear el QR como parámetros u=xxx&p=yyy
+        try {
+            // El QR puede contener una URL o directamente parámetros
+            let username = null;
+            let password = null;
+            
+            // Si es una URL, extraer parámetros
+            if (decodedText.includes('?')) {
+                const qrParams = new URLSearchParams(decodedText.split('?')[1]);
+                username = qrParams.get('u');
+                password = qrParams.get('p');
+            } else if (decodedText.includes('&')) {
+                // Si son parámetros directos como "u=admin&p=12345"
+                const qrParams = new URLSearchParams(decodedText);
+                username = qrParams.get('u');
+                password = qrParams.get('p');
+            }
+            
+            // Si encontramos usuario y contraseña en el QR
+            if (username && password) {
+                showStatus('✅ Voucher detectado. Autenticando...', 'success');
+                messageText.innerHTML = '🔄 <strong>Voucher válido:</strong> Conectando con el servidor...';
+                authenticateVoucher(username, password);
+            } else {
+                // Si el QR solo contiene texto, intentar usarlo como token alternativo
+                showStatus('⚠️ QR inválido - Debe contener usuario y contraseña del voucher', 'error');
+                messageText.innerHTML = '❌ <strong>QR inválido:</strong> El código debe contener los datos de acceso. Usa el acceso manual.';
+            }
+        } catch (e) {
+            console.error('Error al parsear QR:', e);
+            showStatus('❌ QR no reconocido - Escanea el código correcto de tu ticket', 'error');
+        }
     }
 
-    // Callback para errores de escaneo (se ignoran para no molestar)
-    function onScanError(errorMessage) {
-        // Los errores menores (como frames sin QR) se ignoran
-        // Solo mostramos si es un error grave
+    function onQRCodeError(errorMessage) {
+        // Errores menores se ignoran para no molestar al usuario
         if (errorMessage.includes('Permission') || errorMessage.includes('NotAllowedError')) {
-            showToast('🔒 Permiso de cámara denegado. Usa el acceso manual.', 'error');
+            showStatus('🔒 Permiso de cámara denegado. Usa el acceso manual.', 'error');
             stopScanner();
         }
     }
 
-    // Mostrar panel manual
+    // ==================== MODO MANUAL ====================
+    
     function showManualPanel() {
         manualPanel.classList.toggle('show');
         if (manualPanel.classList.contains('show')) {
-            manualCodeInput.focus();
             if (isScanning) {
                 stopScanner();
             }
+            voucherUser.focus();
         }
     }
 
-    // Enviar código manual
-    function submitManualCode() {
-        const code = manualCodeInput.value.trim();
-        if (!code) {
-            showToast('✏️ Por favor, ingresa el código que ves en tu ticket o mesa', 'error');
+    function submitManualVoucher() {
+        const username = voucherUser.value.trim();
+        const password = voucherPass.value.trim();
+        
+        if (!username || !password) {
+            showStatus('✏️ Por favor, ingresa usuario y contraseña del voucher', 'error');
             return;
         }
         
-        showToast('🔍 Validando código manual...', 'info');
-        validateAndConnect(code);
+        showStatus('🔍 Validando voucher manual...', 'info');
+        authenticateVoucher(username, password);
     }
 
-    // Event listeners
+    // ==================== EVENT LISTENERS ====================
     startBtn.addEventListener('click', startScanner);
     stopBtn.addEventListener('click', stopScanner);
     showManualBtn.addEventListener('click', showManualPanel);
-    submitManualBtn.addEventListener('click', submitManualCode);
+    submitManualBtn.addEventListener('click', submitManualVoucher);
     
-    // Enter en el input manual
-    manualCodeInput.addEventListener('keypress', (e) => {
-        if (e.key === 'Enter') {
-            submitManualCode();
-        }
+    // Enter en inputs manuales
+    voucherUser.addEventListener('keypress', (e) => {
+        if (e.key === 'Enter') voucherPass.focus();
+    });
+    voucherPass.addEventListener('keypress', (e) => {
+        if (e.key === 'Enter') submitManualVoucher();
     });
 
-    // Verificar si hay validación automática por URL
-    if (urlParams.get('validar') === 'true') {
-        const savedToken = localStorage.getItem('ap_wifi_token');
-        const savedUrl = localStorage.getItem('ap_wifi_url');
-        if (savedToken && savedUrl) {
-            infoText.innerHTML = '🔄 <strong>Validación automática...</strong> Conectando...';
-            setTimeout(() => {
-                validateAndConnect(savedToken);
-            }, 500);
-        }
-    }
-
-    // Limpiar al salir
+    // ==================== LIMPIEZA ====================
     window.addEventListener('beforeunload', () => {
         if (html5QrCode && isScanning) {
             html5QrCode.stop().catch(console.log);
         }
     });
 
-    console.log('✅ App lista - Haz clic en "Iniciar escáner" para comenzar');
+    console.log('✅ Sistema listo - Modos: Escaneo QR y Voucher Manual');
 </script>
 </body>
 </html>
