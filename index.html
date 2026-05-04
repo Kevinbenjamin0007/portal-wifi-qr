@@ -27,11 +27,10 @@
             background: rgba(255,255,255,0.98);
             border-radius: 32px;
             box-shadow: 0 25px 50px -12px rgba(0,0,0,0.4);
-            max-width: 550px;
+            max-width: 580px;
             width: 100%;
             overflow: hidden;
             animation: fadeIn 0.5s ease;
-            backdrop-filter: blur(2px);
         }
 
         @keyframes fadeIn {
@@ -42,16 +41,16 @@
         .header {
             background: linear-gradient(135deg, #0f2027, #203a43, #2c5364);
             color: white;
-            padding: 28px 24px;
+            padding: 25px 20px;
             text-align: center;
         }
 
         .header h1 {
-            font-size: 26px;
+            font-size: 24px;
             display: flex;
             align-items: center;
             justify-content: center;
-            gap: 12px;
+            gap: 10px;
         }
 
         .header .badge {
@@ -59,13 +58,53 @@
             border-radius: 50px;
             padding: 4px 12px;
             font-size: 11px;
-            margin-top: 10px;
+            margin-top: 8px;
             display: inline-block;
         }
 
         .content {
             padding: 24px;
         }
+
+        /* Panel de diagnóstico */
+        .diagnostic-panel {
+            background: #f8f9fa;
+            border-radius: 16px;
+            padding: 15px;
+            margin-bottom: 20px;
+            border: 1px solid #dee2e6;
+        }
+        .diagnostic-panel h4 {
+            font-size: 13px;
+            color: #495057;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .diagnostic-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 8px 0;
+            border-bottom: 1px solid #e9ecef;
+            font-size: 12px;
+        }
+        .diagnostic-item:last-child {
+            border-bottom: none;
+        }
+        .diagnostic-label {
+            font-weight: bold;
+            color: #6c757d;
+        }
+        .diagnostic-value {
+            font-family: monospace;
+            word-break: break-all;
+            text-align: right;
+            max-width: 60%;
+        }
+        .diagnostic-value.success { color: #28a745; }
+        .diagnostic-value.error { color: #dc3545; }
+        .diagnostic-value.warning { color: #ffc107; }
 
         /* Sistema de Alertas */
         .alert-system {
@@ -75,7 +114,7 @@
             transform: translateX(-50%);
             z-index: 10000;
             width: 90%;
-            max-width: 480px;
+            max-width: 500px;
             pointer-events: none;
         }
 
@@ -90,7 +129,6 @@
             gap: 12px;
             animation: slideIn 0.3s ease;
             pointer-events: auto;
-            cursor: pointer;
         }
 
         @keyframes slideIn {
@@ -107,30 +145,13 @@
         .alert-content { flex: 1; }
         .alert-title { font-weight: bold; font-size: 14px; }
         .alert-message { font-size: 12px; color: #555; }
-        .alert-close { cursor: pointer; font-size: 18px; color: #999; padding: 0 5px; }
-
-        .info-card {
-            background: linear-gradient(135deg, #e8f0fe, #d4e4fc);
-            border-radius: 20px;
-            padding: 18px;
-            margin-bottom: 20px;
-            text-align: center;
-            border: 1px solid rgba(52,152,219,0.3);
-        }
-
-        .info-card p {
-            color: #1a1a2e;
-            font-size: 14px;
-            line-height: 1.5;
-        }
 
         .scanner-area {
             background: #000;
             border-radius: 20px;
             overflow: hidden;
             margin: 15px 0;
-            min-height: 320px;
-            position: relative;
+            min-height: 300px;
         }
 
         #qr-reader { width: 100%; }
@@ -144,11 +165,10 @@
 
         button {
             flex: 1;
-            padding: 14px;
+            padding: 12px;
             border: none;
-            border-radius: 60px;
-            font-weight: 700;
-            font-size: 14px;
+            border-radius: 50px;
+            font-weight: 600;
             cursor: pointer;
             transition: all 0.2s;
             display: flex;
@@ -157,60 +177,20 @@
             gap: 8px;
         }
 
-        .btn-primary {
-            background: #007bff;
-            color: white;
-            box-shadow: 0 4px 12px rgba(0,123,255,0.3);
-        }
-        .btn-primary:hover:not(:disabled) {
-            background: #0056b3;
-            transform: translateY(-2px);
-        }
-        .btn-secondary {
-            background: #6c757d;
-            color: white;
-        }
-        .btn-secondary:hover:not(:disabled) {
-            background: #545b62;
-        }
-        .btn-outline {
-            background: white;
-            color: #007bff;
-            border: 2px solid #007bff;
-        }
-        .btn-outline:hover {
-            background: #007bff;
-            color: white;
-        }
-        button:disabled {
-            opacity: 0.5;
-            cursor: not-allowed;
-        }
-
-        .status-box {
-            background: #f8f9fa;
-            border-radius: 16px;
-            padding: 12px;
-            margin: 10px 0;
-            text-align: center;
-            font-size: 13px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 8px;
-        }
-
-        .status-box.active {
-            background: #d4edda;
-            color: #155724;
-        }
+        .btn-primary { background: #007bff; color: white; }
+        .btn-primary:hover:not(:disabled) { background: #0056b3; transform: translateY(-1px); }
+        .btn-secondary { background: #6c757d; color: white; }
+        .btn-secondary:hover:not(:disabled) { background: #545b62; }
+        .btn-outline { background: white; color: #007bff; border: 2px solid #007bff; }
+        .btn-outline:hover { background: #007bff; color: white; }
+        button:disabled { opacity: 0.5; cursor: not-allowed; }
 
         .manual-section {
             margin-top: 20px;
             padding-top: 15px;
             border-top: 1px solid #e0e0e0;
         }
-        .manual-toggle { text-align: center; margin-bottom: 10px; }
+        .manual-toggle { text-align: center; }
         .manual-toggle a {
             color: #007bff;
             text-decoration: none;
@@ -221,39 +201,24 @@
             background: #f8f9fa;
             border-radius: 16px;
             padding: 15px;
+            margin-top: 12px;
             display: none;
         }
-        .manual-form.show { display: block; animation: fadeScale 0.2s ease; }
-        @keyframes fadeScale {
-            from { opacity: 0; transform: scale(0.95); }
-            to { opacity: 1; transform: scale(1); }
-        }
+        .manual-form.show { display: block; }
         .manual-form input {
             width: 100%;
             padding: 12px;
-            border: 2px solid #e0e0e0;
+            border: 1px solid #ddd;
             border-radius: 50px;
             margin-bottom: 10px;
-            font-size: 14px;
-        }
-        .manual-form input:focus {
-            outline: none;
-            border-color: #007bff;
         }
 
         .footer {
             background: #f8f9fa;
-            padding: 14px;
+            padding: 12px;
             text-align: center;
             font-size: 11px;
             color: #888;
-            border-top: 1px solid #e0e0e0;
-        }
-
-        @media (max-width: 480px) {
-            .header h1 { font-size: 20px; }
-            .content { padding: 18px; }
-            button { padding: 12px; }
         }
     </style>
 </head>
@@ -263,16 +228,18 @@
 
 <div class="card">
     <div class="header">
-        <h1>
-            <span>📶</span> WiFi Premium
-        </h1>
+        <h1><span>📶</span> WiFi Premium</h1>
         <p>Autenticación Segura | GWN7630LR + MikroTik</p>
-        <div class="badge">⚡ Velocidad Óptima | Portal Cautivo RADIUS</div>
+        <div class="badge">⚡ Portal Cautivo RADIUS</div>
     </div>
 
     <div class="content">
-        <div class="info-card">
-            <p id="mainMessage">📱 Escanea el código QR de tu ticket o mesa para conectarte a Internet</p>
+        <!-- Panel de diagnóstico - MUESTRA EL ESTADO DEL PORTAL -->
+        <div class="diagnostic-panel" id="diagnosticPanel">
+            <h4>🔍 Diagnóstico del Sistema</h4>
+            <div id="diagnosticContent">
+                <!-- Se llena con JavaScript -->
+            </div>
         </div>
 
         <div class="scanner-area">
@@ -284,24 +251,20 @@
             <button id="stopBtn" class="btn-secondary" disabled>⏹️ Detener</button>
         </div>
 
-        <div id="statusBox" class="status-box">
-            <span>⚪</span> Sistema listo - Conectado a la red
-        </div>
-
         <div class="manual-section">
             <div class="manual-toggle">
-                <a id="toggleManualBtn">✏️ ¿Problemas con la cámara? Ingresa tus datos manualmente</a>
+                <a id="toggleManualBtn">✏️ ¿Problemas con la cámara? Ingreso manual</a>
             </div>
             <div id="manualForm" class="manual-form">
                 <input type="text" id="manualUser" placeholder="Usuario del voucher (ej: mesa01)" autocomplete="off">
-                <input type="password" id="manualPass" placeholder="Contraseña" autocomplete="off">
+                <input type="password" id="manualPass" placeholder="Contraseña">
                 <button id="submitManualBtn" class="btn-outline" style="width: 100%;">✅ Conectarse</button>
             </div>
         </div>
     </div>
 
     <div class="footer">
-        🔒 Sistema RADIUS | Tiempo de expiración: 5 min | Soporte 24/7
+        🔒 Sistema RADIUS | Soporte técnico
     </div>
 </div>
 
@@ -309,8 +272,7 @@
     // ==================== SISTEMA DE ALERTAS ====================
     function showAlert(title, message, type = 'info', duration = 4000) {
         const alertSystem = document.getElementById('alertSystem');
-        const alertId = 'alert_' + Date.now() + '_' + Math.random().toString(36).substr(2, 6);
-        
+        const alertId = 'alert_' + Date.now();
         const icons = { success: '✅', error: '❌', warning: '⚠️', info: 'ℹ️' };
         
         const alertDiv = document.createElement('div');
@@ -322,19 +284,10 @@
                 <div class="alert-title">${escapeHtml(title)}</div>
                 <div class="alert-message">${escapeHtml(message)}</div>
             </div>
-            <div class="alert-close" onclick="document.getElementById('${alertId}').remove()">✕</div>
         `;
         
         alertSystem.appendChild(alertDiv);
-        
-        setTimeout(() => {
-            const el = document.getElementById(alertId);
-            if (el) {
-                el.style.animation = 'slideOut 0.3s ease forwards';
-                setTimeout(() => el.remove(), 300);
-            }
-        }, duration);
-        
+        setTimeout(() => alertDiv.remove(), duration);
         console.log(`[${type}] ${title}: ${message}`);
     }
 
@@ -344,60 +297,111 @@
         return div.innerHTML;
     }
 
-    function updateStatus(message, isActive = false) {
-        const statusBox = document.getElementById('statusBox');
-        statusBox.innerHTML = `<span>${isActive ? '🔄' : '⚪'}</span> ${message}`;
-        if (isActive) statusBox.classList.add('active');
-        else statusBox.classList.remove('active');
+    // ==================== DIAGNÓSTICO COMPLETO ====================
+    function updateDiagnosticPanel() {
+        const diagnosticContent = document.getElementById('diagnosticContent');
+        
+        // Obtener todos los parámetros de la URL
+        const allParams = new URLSearchParams(window.location.search);
+        const paramsList = [];
+        for (const [key, value] of allParams) {
+            paramsList.push(`${key}=${value.substring(0, 50)}${value.length > 50 ? '...' : ''}`);
+        }
+        
+        // Verificar URLs guardadas
+        const savedUrl = localStorage.getItem('gw_url');
+        const savedToken = localStorage.getItem('gw_token');
+        
+        // Detectar si hay portal cautivo
+        const hasGrantUrl = allParams.has('base_grant_url');
+        const hasGrantToken = allParams.has('grant_token');
+        const hasPortalDetected = (hasGrantUrl && hasGrantToken) || (savedUrl && savedToken);
+        
+        // Información del navegador
+        const userAgent = navigator.userAgent;
+        const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(userAgent);
+        
+        diagnosticContent.innerHTML = `
+            <div class="diagnostic-item">
+                <span class="diagnostic-label">📡 Portal Cautivo:</span>
+                <span class="diagnostic-value ${hasPortalDetected ? 'success' : 'error'}">
+                    ${hasPortalDetected ? '✅ DETECTADO' : '❌ NO DETECTADO'}
+                </span>
+            </div>
+            ${hasGrantUrl ? `
+            <div class="diagnostic-item">
+                <span class="diagnostic-label">🔑 base_grant_url:</span>
+                <span class="diagnostic-value success">${escapeHtml(allParams.get('base_grant_url') || 'N/A')}</span>
+            </div>
+            ` : ''}
+            ${hasGrantToken ? `
+            <div class="diagnostic-item">
+                <span class="diagnostic-label">🎫 grant_token:</span>
+                <span class="diagnostic-value success">${escapeHtml(allParams.get('grant_token') || 'N/A')}</span>
+            </div>
+            ` : ''}
+            <div class="diagnostic-item">
+                <span class="diagnostic-label">💾 URL guardada:</span>
+                <span class="diagnostic-value ${savedUrl ? 'success' : 'warning'}">${savedUrl ? escapeHtml(savedUrl) : 'No guardada'}</span>
+            </div>
+            <div class="diagnostic-item">
+                <span class="diagnostic-label">📱 Dispositivo:</span>
+                <span class="diagnostic-value">${isMobile ? 'Móvil' : 'Escritorio'}</span>
+            </div>
+            <div class="diagnostic-item">
+                <span class="diagnostic-label">🔗 URL actual:</span>
+                <span class="diagnostic-value" style="max-width: 70%;">${escapeHtml(window.location.pathname + window.location.search)}</span>
+            </div>
+            <div class="diagnostic-item">
+                <span class="diagnostic-label">📊 Parámetros URL:</span>
+                <span class="diagnostic-value">${paramsList.length > 0 ? paramsList.join(', ') : 'Ninguno'}</span>
+            </div>
+        `;
+        
+        return hasPortalDetected;
     }
 
-    // ==================== 1. CAPTURA DATOS DEL AP (Grandstream/MikroTik) ====================
-    // Esta es la parte CRÍTICA: Captura los parámetros que el Grandstream envía al redirigir
+    // ==================== CAPTURA DE PARÁMETROS DEL AP ====================
     const urlParams = new URLSearchParams(window.location.search);
     const base_grant_url = urlParams.get('base_grant_url');
     const grant_token = urlParams.get('grant_token');
 
-    // Guardar en localStorage para usar después del escaneo del QR
+    // Guardar en localStorage
     if (base_grant_url && grant_token) {
         localStorage.setItem('gw_url', base_grant_url);
         localStorage.setItem('gw_token', grant_token);
-        showAlert('✅ Configuración guardada', 'Portal cautivo detectado correctamente', 'success', 3000);
-        updateStatus('Red detectada - Listo para escanear QR', false);
+        showAlert('✅ Portal cautivo detectado', 'Configuración guardada correctamente', 'success', 4000);
+        console.log('✅ Parámetros guardados:', { base_grant_url, grant_token });
+    } else if (localStorage.getItem('gw_url') && localStorage.getItem('gw_token')) {
+        showAlert('ℹ️ Usando configuración previa', 'Portal cautivo ya estaba configurado', 'info', 3000);
+        console.log('ℹ️ Usando credenciales guardadas');
     } else {
-        showAlert('⚠️ Conectado a la red', 'Escanea el QR de tu mesa para activar Internet', 'info', 4000);
-        updateStatus('Conectado - Escanea el código QR', false);
+        showAlert('⚠️ Portal NO detectado', 'Asegúrate de conectarte a través del WiFi del local', 'warning', 5000);
+        console.log('⚠️ No se recibieron parámetros del portal cautivo');
+        console.log('URL actual:', window.location.href);
+        console.log('Parámetros disponibles:', Array.from(urlParams.keys()));
     }
 
-    // Si ya hay credenciales guardadas previamente, mostramos estado
-    if (localStorage.getItem('gw_url') && localStorage.getItem('gw_token')) {
-        console.log('✅ Credenciales del AP almacenadas:', localStorage.getItem('gw_url'));
-    }
-
-    // Autenticación por URL directa (cuando el QR ya tiene los parámetros u y p)
+    // Autenticación por URL directa (u y p)
     const urlUser = urlParams.get('u');
     const urlPass = urlParams.get('p');
     if (urlUser && urlPass) {
-        showAlert('🔑 Voucher detectado', `Usuario: ${urlUser}`, 'info', 3000);
-        updateStatus('Procesando autenticación...', true);
-        setTimeout(() => authenticateVoucher(urlUser, urlPass), 1000);
+        showAlert('🔑 Voucher detectado en URL', `Usuario: ${urlUser}`, 'info', 3000);
+        setTimeout(() => authenticateVoucher(urlUser, urlPass), 1500);
     }
 
-    // ==================== 2. FUNCIÓN PRINCIPAL DE AUTENTICACIÓN ====================
-    // Esta función redirige al Grandstream con los datos del voucher
+    // ==================== AUTENTICACIÓN ====================
     function authenticateVoucher(username, password) {
         const savedUrl = localStorage.getItem('gw_url');
         const savedToken = localStorage.getItem('gw_token');
 
         if (!savedUrl || !savedToken) {
-            showAlert('❌ Error de red', 'No se detecta el portal cautivo. Conéctate al WiFi del local.', 'error', 5000);
-            updateStatus('Error: Conéctate al WiFi', false);
+            showAlert('❌ Error', 'No hay configuración del portal cautivo. Conéctate al WiFi del local.', 'error', 5000);
             return false;
         }
 
         showAlert('🔄 Autenticando', `Validando voucher para ${username}...`, 'info', 2000);
-        updateStatus(`Validando ${username}...`, true);
 
-        // Construir URL de redirección según formato Grandstream
         let redirectUrl;
         if (savedUrl.includes('?')) {
             redirectUrl = `${savedUrl}&token=${encodeURIComponent(savedToken)}&username=${encodeURIComponent(username)}&password=${encodeURIComponent(password)}`;
@@ -408,111 +412,80 @@
         console.log('Redirigiendo a:', redirectUrl);
 
         setTimeout(() => {
-            showAlert('✅ Acceso concedido', `Bienvenido ${username}, conectando a Internet...`, 'success', 2000);
-            setTimeout(() => {
-                window.location.href = redirectUrl;
-            }, 500);
+            showAlert('✅ Acceso concedido', `Bienvenido ${username}`, 'success', 1500);
+            setTimeout(() => { window.location.href = redirectUrl; }, 500);
         }, 500);
 
         return true;
     }
 
-    // ==================== 3. PROCESAR QR ESCANEADO ====================
-    // El QR debe contener: ?u=usuario&p=contraseña
+    // ==================== ESCÁNER QR ====================
     let html5QrCode = null;
     let isScanning = false;
 
     function onScanSuccess(decodedText) {
         console.log('QR escaneado:', decodedText);
+        showAlert('📱 QR Detectado', 'Procesando código...', 'info', 2000);
         
-        showAlert('📱 QR Detectado', `Procesando código...`, 'info', 2000);
-        updateStatus('Procesando QR...', true);
-        
-        // Detener escáner automáticamente
         if (isScanning) stopScanner();
         
         let username = null;
         let password = null;
         
         try {
-            // Extraer parámetros u y p del QR (formato esperado: ?u=usuario&p=clave)
             if (decodedText.includes('?')) {
                 const qrParams = new URLSearchParams(decodedText.split('?')[1]);
                 username = qrParams.get('u');
                 password = qrParams.get('p');
             } else if (decodedText.includes('&')) {
-                // Formato directo: u=usuario&p=clave
                 const qrParams = new URLSearchParams(decodedText);
                 username = qrParams.get('u');
                 password = qrParams.get('p');
             } else if (decodedText.includes(':')) {
-                // Formato: usuario:contraseña
                 const parts = decodedText.split(':');
                 username = parts[0];
                 password = parts[1];
             } else if (decodedText.includes(',')) {
-                // Formato: usuario,contraseña
                 const parts = decodedText.split(',');
                 username = parts[0];
                 password = parts[1];
             }
             
-            const savedUrl = localStorage.getItem('gw_url');
-            
-            if (username && password && savedUrl) {
+            if (username && password) {
                 showAlert('✅ QR Válido', `Usuario: ${username}`, 'success', 3000);
                 authenticateVoucher(username, password);
-            } else if (!savedUrl) {
-                showAlert('❌ Error de configuración', 'No se detecta el portal cautivo. Conéctate al WiFi.', 'error', 5000);
-                updateStatus('Error: Conéctate al WiFi', false);
             } else {
-                showAlert('❌ QR Inválido', 'El código no contiene usuario/contraseña válidos', 'error', 5000);
-                updateStatus('QR inválido - Usa el modo manual', false);
+                showAlert('❌ QR Inválido', 'El código no contiene usuario/contraseña', 'error', 4000);
             }
-            
         } catch (e) {
-            showAlert('❌ Error', 'No se pudo procesar el código QR', 'error', 4000);
-            console.error('Error parseando QR:', e);
+            showAlert('❌ Error', 'No se pudo procesar el QR', 'error', 4000);
         }
     }
 
-    // ==================== 4. ESCÁNER QR ====================
     async function startScanner() {
-        if (isScanning) {
-            showAlert('⚠️ Escáner activo', 'Ya hay un escáner funcionando', 'warning', 2000);
-            return;
-        }
-
+        if (isScanning) return;
+        
         try {
             showAlert('📷 Iniciando cámara', 'Solicitando permiso...', 'info', 2000);
-            updateStatus('Iniciando cámara...', true);
             
             html5QrCode = new Html5Qrcode("qr-reader");
             const cameras = await Html5Qrcode.getCameras();
             
-            if (!cameras || cameras.length === 0) {
-                throw new Error('No se encontraron cámaras');
-            }
+            if (!cameras || cameras.length === 0) throw new Error('No hay cámaras');
             
-            // Seleccionar cámara trasera si existe
             let selectedCamera = cameras[0];
             for (const cam of cameras) {
-                if (cam.label.toLowerCase().includes('back') || 
-                    cam.label.toLowerCase().includes('environment') ||
-                    cam.label.toLowerCase().includes('trasera')) {
+                if (cam.label.toLowerCase().includes('back') || cam.label.toLowerCase().includes('environment')) {
                     selectedCamera = cam;
                     break;
                 }
             }
             
-            const config = { fps: 10, qrbox: { width: 280, height: 280 } };
-            
             await html5QrCode.start(
                 { deviceId: selectedCamera.id },
-                config,
+                { fps: 10, qrbox: { width: 280, height: 280 } },
                 onScanSuccess,
                 (error) => {
-                    // Ignorar errores de "no QR found"
                     if (error && (error.includes('Permission') || error.includes('NotAllowed'))) {
                         showAlert('🔒 Permiso denegado', 'No se pudo acceder a la cámara', 'error', 4000);
                         stopScanner();
@@ -523,14 +496,11 @@
             isScanning = true;
             document.getElementById('startBtn').disabled = true;
             document.getElementById('stopBtn').disabled = false;
-            updateStatus('Escáner activo - Apunta al QR de tu mesa', true);
-            showAlert('✅ Escáner listo', 'Apunta al código QR de tu ticket o mesa', 'success', 3000);
+            showAlert('✅ Escáner listo', 'Apunta al código QR', 'success', 3000);
             
         } catch (err) {
             showAlert('❌ Error de cámara', err.message, 'error', 5000);
-            updateStatus('Error: No se pudo acceder a la cámara', false);
             document.getElementById('startBtn').disabled = false;
-            document.getElementById('stopBtn').disabled = true;
         }
     }
 
@@ -541,21 +511,14 @@
                 isScanning = false;
                 document.getElementById('startBtn').disabled = false;
                 document.getElementById('stopBtn').disabled = true;
-                updateStatus('Escáner detenido', false);
-                showAlert('⏹️ Escáner detenido', 'Puedes reiniciarlo cuando quieras', 'info', 2000);
-            } catch (err) {
-                console.error('Error al detener:', err);
-            }
+            } catch (err) {}
         }
     }
 
-    // ==================== 5. MODO MANUAL ====================
+    // ==================== MODO MANUAL ====================
     function toggleManualMode() {
         const manualForm = document.getElementById('manualForm');
         manualForm.classList.toggle('show');
-        if (manualForm.classList.contains('show')) {
-            document.getElementById('manualUser').focus();
-        }
     }
 
     function submitManualVoucher() {
@@ -563,38 +526,30 @@
         const password = document.getElementById('manualPass').value.trim();
         
         if (!username || !password) {
-            showAlert('⚠️ Datos incompletos', 'Ingresa usuario y contraseña del voucher', 'warning', 3000);
+            showAlert('⚠️ Datos incompletos', 'Ingresa usuario y contraseña', 'warning', 3000);
             return;
         }
         
-        showAlert('🔑 Voucher manual', `Usuario: ${username}`, 'info', 2000);
         authenticateVoucher(username, password);
     }
 
-    // ==================== 6. EVENT LISTENERS ====================
+    // ==================== INICIALIZACIÓN ====================
     document.getElementById('startBtn').addEventListener('click', startScanner);
     document.getElementById('stopBtn').addEventListener('click', stopScanner);
     document.getElementById('toggleManualBtn').addEventListener('click', toggleManualMode);
     document.getElementById('submitManualBtn').addEventListener('click', submitManualVoucher);
     
-    document.getElementById('manualUser').addEventListener('keypress', (e) => {
-        if (e.key === 'Enter') document.getElementById('manualPass').focus();
-    });
-    document.getElementById('manualPass').addEventListener('keypress', (e) => {
-        if (e.key === 'Enter') submitManualVoucher();
-    });
-
-    // ==================== 7. LIMPIEZA ====================
-    window.addEventListener('beforeunload', async () => {
-        if (html5QrCode && isScanning) {
-            try { await html5QrCode.stop(); } catch(e) {}
-        }
-    });
-
+    // Actualizar panel de diagnóstico
+    updateDiagnosticPanel();
+    
+    // Mostrar información en consola
+    console.log('=== DIAGNÓSTICO ===');
+    console.log('URL:', window.location.href);
+    console.log('Parámetros:', Object.fromEntries(urlParams));
+    console.log('LocalStorage:', { gw_url: localStorage.getItem('gw_url'), gw_token: localStorage.getItem('gw_token') });
+    
     // Mensaje de inicio
-    showAlert('🚀 Sistema listo', 'Escanea el código QR de tu mesa para conectarte', 'success', 4000);
-    console.log('✅ Portal cautivo listo - Esperando autenticación');
-    console.log('URL actual:', window.location.href);
+    showAlert('🚀 Sistema listo', 'Escanea el QR de tu mesa', 'success', 3000);
 </script>
 </body>
 </html>
